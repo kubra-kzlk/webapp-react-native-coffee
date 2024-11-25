@@ -7,12 +7,13 @@ interface Coffee {
     title: string;
 }
 
-export default function CoffeeListScreen() {
+export default function CoffeeList() {
     const router = useRouter();
     const { type } = useLocalSearchParams();
     const [coffees, setCoffees] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    //een API aanspreken met een GET request om data op te halen.
     useEffect(() => {
         const fetchCoffees = async () => {
             try {
@@ -44,7 +45,7 @@ export default function CoffeeListScreen() {
                         <TouchableOpacity
                             style={styles.itemContainer}
                             onPress={() => router.push({
-                                pathname: '/CoffeeDetailScreen',
+                                pathname: '/CoffeeDetail',
                                 params: { id: item.id }
                             })}
                         >

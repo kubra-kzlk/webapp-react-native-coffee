@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 
+//he _layout.tsx file serves as the navigation layout wrapper
+// It uses Expo Router's <Stack> to define how screens are displayed.
 export default function Layout() {
   useEffect(() => {
     // Request notification permissions

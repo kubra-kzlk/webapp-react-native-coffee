@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground } f
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Coffee, IceCream, Plus, Heart } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from 'expo-router';
 interface Coffee {
   id: string;
   title: string;
@@ -21,11 +22,12 @@ interface HomeScreenProps {
   navigation: HomeScreenNavigationProp;
 }
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
+export default function HomeScreen({ }: HomeScreenProps) {
   const [favorites, setFavorites] = useState([]);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const getFavorites = async () => {
-    try {
+    try {                     //to fetch and display user favorites
       const favoritesData = await AsyncStorage.getItem('favorites');
       // If favoritesData is null, fallback to an empty array
       const parsedFavorites = favoritesData ? JSON.parse(favoritesData) : [];
@@ -87,7 +89,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         ) : (
           <FlatList
             data={favorites}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={renderFavoriteItem}
           />
         )}
@@ -101,8 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flex: 1,
-    backgroundColor: '',
+    flex: 1
   },
   header: {
     backgroundColor: "white",

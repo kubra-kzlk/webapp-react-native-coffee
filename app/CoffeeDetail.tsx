@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+
 interface Coffee {
     id: string;
     title: string;
@@ -10,22 +11,48 @@ interface Coffee {
     ingredients: string[];
     image: string;
 }
-// Define types for the route parameter
-interface CoffeeDetailScreenProps {
-    route: {
-        params: {
-            coffee: Coffee;
-        };
-    };
-}
-export default function CoffeeDetailScreen({ route }: CoffeeDetailScreenProps) {
+
+export default function CoffeeDetail() {
     const router = useRouter();
-    const { coffee } = route.params;
+    const { type } = useLocalSearchParams<{ type: string }>(); // 'type' from query params
+    const [coffee, setCoffee] = useState<Coffee | null>(null);
     const [reminderTime, setReminderTime] = useState('');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch the coffee details from the API based on the type
+    useEffect(() => {
+        const fetchCoffeeDetails = async () => {
+            if (!type) return;
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                // Fetch coffee details based on the 'type'
+                const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
+                const data = await response.json();
+
+                // Assuming that the data is an array, and we're getting the first coffee in the list
+                if (Array.isArray(data) && data.length > 0) {
+                    setCoffee(data[0]); // You can adjust this depending on how you want to handle the response
+                } else {
+                    setError('No coffee found for the given type.');
+                }
+            } catch (error) {
+                setError('Error fetching coffee details. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCoffeeDetails();
+    }, [type]);
 
     const markAsFavorite = async () => {
+        if (!coffee) return;
+
         try {
-            //const favorites = JSON.parse(await AsyncStorage.getItem('favorites')) || [];
             const favoritesJson = await AsyncStorage.getItem('favorites');
             const favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
             const isFavorite = favorites.some((item: Coffee) => item.id === coffee.id);
@@ -51,6 +78,8 @@ export default function CoffeeDetailScreen({ route }: CoffeeDetailScreenProps) {
                 return;
             }
 
+            if (!coffee) return;
+
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: 'Coffee Reminder',
@@ -65,6 +94,31 @@ export default function CoffeeDetailScreen({ route }: CoffeeDetailScreenProps) {
             console.error('Error scheduling notification:', error);
         }
     };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#8B4513" />
+                <Text style={styles.loadingText}>Loading coffee details...</Text>
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{error}</Text>
+            </View>
+        );
+    }
+
+    if (!coffee) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>Coffee details not found.</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -153,5 +207,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginBottom: 15,
         backgroundColor: '#FFF',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5E6D3',
+    },
+    loadingText: {
+        fontSize: 16,
+        color: '#8B4513',
+        marginTop: 10,
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5E6D3',
+    },
+    errorText: {
+        fontSize: 16,
+        color: '#D9534F',
+        textAlign: 'center',
     },
 });
