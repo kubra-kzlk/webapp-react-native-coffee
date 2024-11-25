@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-export default function CoffeeListScreen({ route, navigation }) {
-    const { type } = route.params; // hot or iced
+interface Coffee {
+    id: string;
+    title: string;
+}
+
+export default function CoffeeListScreen() {
+    const router = useRouter();
+    const { type } = useLocalSearchParams();
     const [coffees, setCoffees] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -33,10 +40,13 @@ export default function CoffeeListScreen({ route, navigation }) {
                 <FlatList
                     data={coffees}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
+                    renderItem={({ item }: { item: Coffee }) => (
                         <TouchableOpacity
                             style={styles.itemContainer}
-                            onPress={() => navigation.navigate('CoffeeDetail', { coffee: item })}
+                            onPress={() => router.push({
+                                pathname: '/CoffeeDetailScreen',
+                                params: { id: item.id }
+                            })}
                         >
                             <Text style={styles.itemText}>{item.title}</Text>
                         </TouchableOpacity>

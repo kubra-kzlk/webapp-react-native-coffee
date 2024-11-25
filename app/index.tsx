@@ -2,14 +2,34 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Coffee, IceCream, Plus, Heart } from 'lucide-react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+interface Coffee {
+  id: string;
+  title: string;
+}
 
-export default function HomeScreen({ navigation }) {
+type RootStackParamList = {
+  Home: undefined;
+  CoffeeList: { type: string };
+  CoffeeDetail: { coffee: any };
+  AddCoffee: undefined;
+};
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
+interface HomeScreenProps {
+  navigation: HomeScreenNavigationProp;
+}
+
+export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [favorites, setFavorites] = useState([]);
 
   const getFavorites = async () => {
     try {
-      const favoritesData = JSON.parse(await AsyncStorage.getItem('favorites')) || [];
-      setFavorites(favoritesData);
+      const favoritesData = await AsyncStorage.getItem('favorites');
+      // If favoritesData is null, fallback to an empty array
+      const parsedFavorites = favoritesData ? JSON.parse(favoritesData) : [];
+      setFavorites(parsedFavorites);
     } catch (error) {
       console.error('Error fetching favorites:', error);
     }
@@ -20,7 +40,7 @@ export default function HomeScreen({ navigation }) {
     return unsubscribe;
   }, [navigation]);
 
-  const renderFavoriteItem = ({ item }) => (
+  const renderFavoriteItem = ({ item }: { item: Coffee }) => (
     <TouchableOpacity
       style={styles.favoriteItem}
       onPress={() => navigation.navigate('CoffeeDetail', { coffee: item })}

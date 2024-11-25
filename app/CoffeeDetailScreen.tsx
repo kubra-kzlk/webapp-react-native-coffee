@@ -2,15 +2,33 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-
-export default function CoffeeDetailScreen({ route }) {
+import { useRouter } from 'expo-router';
+interface Coffee {
+    id: string;
+    title: string;
+    description: string;
+    ingredients: string[];
+    image: string;
+}
+// Define types for the route parameter
+interface CoffeeDetailScreenProps {
+    route: {
+        params: {
+            coffee: Coffee;
+        };
+    };
+}
+export default function CoffeeDetailScreen({ route }: CoffeeDetailScreenProps) {
+    const router = useRouter();
     const { coffee } = route.params;
     const [reminderTime, setReminderTime] = useState('');
 
     const markAsFavorite = async () => {
         try {
-            const favorites = JSON.parse(await AsyncStorage.getItem('favorites')) || [];
-            const isFavorite = favorites.some((item) => item.id === coffee.id);
+            //const favorites = JSON.parse(await AsyncStorage.getItem('favorites')) || [];
+            const favoritesJson = await AsyncStorage.getItem('favorites');
+            const favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
+            const isFavorite = favorites.some((item: Coffee) => item.id === coffee.id);
 
             if (isFavorite) {
                 alert(`${coffee.title} is already marked as favorite.`);
