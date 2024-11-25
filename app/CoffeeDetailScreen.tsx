@@ -39,7 +39,7 @@ export default function CoffeeDetailScreen({ route }) {
                     body: `Time to try your favorite coffee: ${coffee.title}!`,
                     data: { coffeeId: coffee.id },
                 },
-                trigger: 0, // Correct logic preserved
+                trigger: 0,
             });
 
             alert('Reminder set for this coffee!');
@@ -79,13 +79,13 @@ export default function CoffeeDetailScreen({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5E6D3', // Matches HomeScreen background
+        backgroundColor: '#F5E6D3',
         padding: 20,
     },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#8B4513', // Coffee-themed color
+        color: '#8B4513',
         marginBottom: 15,
         textAlign: 'center',
     },

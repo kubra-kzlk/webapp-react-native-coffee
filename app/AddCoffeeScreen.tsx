@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 
-export default function AddCoffeeScreen({ route, navigation }) {
-    const coffee = route.params?.coffee || {};
-    const [title, setTitle] = useState(coffee.title || '');
-    const [description, setDescription] = useState(coffee.description || '');
-    const [ingredients, setIngredients] = useState(coffee.ingredients?.join(', ') || '');
-    const [image, setImage] = useState(coffee.image || null);
+export default function AddCoffeeScreen() {
+    const router = useRouter();//is used to get the router object
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [ingredients, setIngredients] = useState('');
+    const [image, setImage] = useState<string | null>(null);
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -30,17 +32,39 @@ export default function AddCoffeeScreen({ route, navigation }) {
     };
 
     const saveCoffee = async () => {
+        if (!title.trim()) {
+            Alert.alert('Error', 'Please enter a title for the coffee.');
+            return;
+        }
+
         const newCoffee = {
-            ...coffee,
+            id: Date.now().toString(),
             title,
             description,
-            ingredients: ingredients.split(', '),
+            ingredients: ingredients.split(',').map(item => item.trim()).filter(item => item !== ''),
             image,
         };
-        // Simulate API call with AsyncStorage
-        await AsyncStorage.setItem('newCoffee', JSON.stringify(newCoffee));
-        navigation.navigate('Home');
+
+        try {
+            // Get existing coffees
+            const existingCoffeesJson = await AsyncStorage.getItem('coffees');
+            const existingCoffees = existingCoffeesJson ? JSON.parse(existingCoffeesJson) : [];
+
+            // Add new coffee to the list
+            const updatedCoffees = [...existingCoffees, newCoffee];
+
+            // Save updated coffees list
+            await AsyncStorage.setItem('coffees', JSON.stringify(updatedCoffees));
+
+            Alert.alert('Success', 'New coffee added successfully!', [
+                { text: 'OK', onPress: () => router.push('/') }
+            ]);
+        } catch (error) {
+            console.error('Error saving coffee:', error);
+            Alert.alert('Error', 'Failed to save coffee. Please try again.');
+        }
     };
+
 
     return (
         <View style={styles.container}>

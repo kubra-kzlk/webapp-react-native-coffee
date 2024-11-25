@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 export default function CoffeeListScreen({ route, navigation }) {
-    const { type } = route.params; // 'hot' or 'iced'
+    const { type } = route.params; // hot or iced
     const [coffees, setCoffees] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -51,7 +51,7 @@ export default function CoffeeListScreen({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5E6D3', // Matches the background of the HomeScreen
+        backgroundColor: '#F5E6D3',
         padding: 10,
     },
     itemContainer: {
@@ -65,12 +65,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 3, // Adds shadow for Android
+        elevation: 3,
     },
     itemText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#8B4513', // Coffee-themed color
+        color: '#8B4513',
     },
     emptyText: {
         textAlign: 'center',
