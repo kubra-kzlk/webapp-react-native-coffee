@@ -15,6 +15,7 @@ interface Coffee {
 export default function CoffeeDetail() {
     const router = useRouter();
     const { id, type } = useLocalSearchParams<{ id: string, type: string }>(); // 'type' from query params
+    console.log(id, typeof id);
     const [coffee, setCoffee] = useState<Coffee | null>(null);
     const [reminderTime, setReminderTime] = useState('');
     const [loading, setLoading] = useState<boolean>(true);
@@ -36,7 +37,6 @@ export default function CoffeeDetail() {
                 }
 
                 const data = await response.json();
-                console.log('Fetched coffee data:', data);  // Debugging line
                 const coffee = data.find((item: Coffee) => item.id.toString() === id); // Find the coffee by ID
 
                 if (coffee) {
