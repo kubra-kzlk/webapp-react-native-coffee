@@ -14,7 +14,7 @@ interface Coffee {
 
 export default function CoffeeDetail() {
     const router = useRouter();
-    const { type } = useLocalSearchParams<{ type: string }>(); // 'type' from query params
+    const { id, type } = useLocalSearchParams<{ id: string, type: string }>(); // 'type' from query params
     const [coffee, setCoffee] = useState<Coffee | null>(null);
     const [reminderTime, setReminderTime] = useState('');
     const [loading, setLoading] = useState<boolean>(true);
@@ -23,31 +23,37 @@ export default function CoffeeDetail() {
     // Fetch the coffee details from the API based on the type
     useEffect(() => {
         const fetchCoffeeDetails = async () => {
-            if (!type) return;
-
-            setLoading(true);
-            setError(null);
+            if (!id || !type) {
+                setError('Missing coffee ID or type.');
+                setLoading(false);
+                return;
+            }
 
             try {
-                // Fetch coffee details based on the 'type'
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
-                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
 
-                // Assuming that the data is an array, and we're getting the first coffee in the list
-                if (Array.isArray(data) && data.length > 0) {
-                    setCoffee(data[0]); // You can adjust this depending on how you want to handle the response
+                const data = await response.json();
+                console.log('Fetched coffee data:', data);  // Debugging line
+                const coffee = data.find((item: Coffee) => item.id.toString() === id); // Find the coffee by ID
+
+                if (coffee) {
+                    setCoffee(coffee);
                 } else {
-                    setError('No coffee found for the given type.');
+                    setError('Coffee not found.');
                 }
             } catch (error) {
-                setError('Error fetching coffee details. Please try again.');
+                console.error('Error fetching coffee details:', error);
+                setError('Failed to load coffee details.');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchCoffeeDetails();
-    }, [type]);
+    }, [id, type]);
 
     const markAsFavorite = async () => {
         if (!coffee) return;

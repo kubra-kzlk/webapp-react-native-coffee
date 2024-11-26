@@ -46,7 +46,7 @@ export default function CoffeeList() {
                             style={styles.itemContainer}
                             onPress={() => router.push({
                                 pathname: '/CoffeeDetail',
-                                params: { id: item.id }
+                                params: { id: item.id.toString(), type: type }
                             })}
                         >
                             <Text style={styles.itemText}>{item.title}</Text>
