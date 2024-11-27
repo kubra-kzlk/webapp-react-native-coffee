@@ -1,89 +1,95 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Coffee, IceCream, Plus } from 'lucide-react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { GlassWater, Plus, Coffee } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Find the best coffee for you</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })}
-        >
-          <Coffee size={24} color="#FFF" />
-          <Text style={styles.buttonText}>Hot Coffee</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}
-        >
-          <IceCream size={24} color="#FFF" />
-          <Text style={styles.buttonText}>Iced Coffee</Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => router.push('/AddCoffee')}
+      <ImageBackground
+        source={require('../assets/images/beans.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={{ opacity: 0.4 }}
       >
-        <Plus size={24} color="#FFF" />
-        <Text style={styles.addButtonText}>Add New Coffee</Text>
-      </TouchableOpacity>
+        {/* Header */}
+        <Text style={styles.headerTitle}>Find your favorite coffee taste!</Text>
+        <Text style={styles.headerSubtitle}>Find and add your favorite coffee recipes</Text>
+
+        {/* Buttons */}
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button]}
+            onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })}
+          >
+            <Coffee size={32} color="black" />
+            <Text style={styles.buttonText}>Hot Coffee</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button]}
+            onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}
+          >
+            <GlassWater size={32} color="black" />
+            <Text style={styles.buttonText}>Iced Coffee</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Add New Coffee */}
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => router.push('/AddCoffee')}
+        >
+          <Plus size={44} color="black" />
+          <Text style={styles.addButtonText}>Add New Coffee</Text>
+        </TouchableOpacity>
+      </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1
+  },
+  backgroundImage: {
     flex: 1,
+    resizeMode: 'cover', // Make sure the image covers the entire screen
+    justifyContent: 'center', // Center content vertically
   },
-  header: {
-    backgroundColor: 'white',
-    padding: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
+  headerTitle: {
+    fontSize: 50,
     fontWeight: 'bold',
-    color: '#8B4513',
+    textAlign: 'center'
   },
-  buttonContainer: {
+  headerSubtitle: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 320,
+  },
+  buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
+    justifyContent: 'space-evenly',
+    marginHorizontal: 50
   },
   button: {
-    backgroundColor: '#A0522D',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '45%',
+    marginTop: 120,
+    width: 140,
+    height: 140,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 16,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginTop: 5,
   },
   addButton: {
-    backgroundColor: '#A0522D',
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: 15,
-    borderRadius: 10,
-    marginHorizontal: 20,
-    marginTop: 20,
   },
   addButtonText: {
-    color: '#FFF',
-    fontSize: 18,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginLeft: 10,
   },
 });

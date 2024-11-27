@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 
 export default function AddCoffee() {
-    const router = useRouter();//is used to get the router object
+    const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [ingredients, setIngredients] = useState('');
     const [image, setImage] = useState<string | null>(null);
+    const [type, setType] = useState<'hot' | 'iced' | null>(null); // Coffee type state
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -36,12 +37,18 @@ export default function AddCoffee() {
             return;
         }
 
+        if (!type) {
+            Alert.alert('Error', 'Please select the coffee type (Hot or Iced).');
+            return;
+        }
+
         const newCoffee = {
             id: Date.now().toString(),
             title,
             description,
             ingredients: ingredients.split(',').map(item => item.trim()).filter(item => item !== ''),
             image,
+            type,
         };
 
         try {
@@ -64,72 +71,121 @@ export default function AddCoffee() {
         }
     };
 
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Add New Coffee</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Ingredients (comma separated)"
-                value={ingredients}
-                onChangeText={setIngredients}
-            />
-            <TouchableOpacity style={styles.button} onPress={pickImage}>
-                <Text style={styles.buttonText}>Pick an Image</Text>
-            </TouchableOpacity>
-            {image && <Image source={{ uri: image }} style={styles.image} />}
-            <TouchableOpacity style={styles.button} onPress={saveCoffee}>
-                <Text style={styles.buttonText}>Save Coffee</Text>
-            </TouchableOpacity>
+            <ImageBackground
+                source={require('../assets/images/beans.jpg')}
+                style={styles.backgroundImage}
+                imageStyle={{ opacity: 0.4 }}
+            >
+                <Text style={styles.title}>Add New Coffee</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Title"
+                    value={title}
+                    onChangeText={setTitle}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Description"
+                    value={description}
+                    onChangeText={setDescription}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ingredients (comma separated)"
+                    value={ingredients}
+                    onChangeText={setIngredients}
+                />
+
+                {/* Coffee Type Selection */}
+                <Text style={styles.typeTitle}>Select Coffee Type:</Text>
+                <View style={styles.radioContainer}>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setType('hot')}
+                    >
+                        <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
+                        <Text style={styles.radioLabel}>Hot Coffee</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setType('iced')}
+                    >
+                        <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
+                        <Text style={styles.radioLabel}>Iced Coffee</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={pickImage}>
+                    <Text style={styles.buttonText}>Pick an Image</Text>
+                </TouchableOpacity>
+                {image && <Image source={{ uri: image }} style={styles.image} />}
+                <TouchableOpacity style={styles.button} onPress={saveCoffee}>
+                    <Text style={styles.buttonText}>Save Coffee</Text>
+                </TouchableOpacity>
+            </ImageBackground>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1
+    },
+    backgroundImage: {
         flex: 1,
-        backgroundColor: '#F5E6D3',
-        padding: 20,
+        resizeMode: 'cover',
+        justifyContent: 'center',
     },
     title: {
-        fontSize: 28,
+        fontSize: 50,
         fontWeight: 'bold',
-        color: '#8B4513',
-        marginBottom: 20,
-        textAlign: 'center',
+        textAlign: 'center'
     },
     input: {
         height: 40,
-        borderColor: '#A0522D',
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#FFF',
         paddingHorizontal: 10,
-        marginBottom: 15,
+        marginBottom: 10,
+
+    },
+    typeTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
+    radioContainer: {
+        flexDirection: 'row',
+        marginBottom: 1
+    },
+    radioButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 20,
+    },
+    radioCircle: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        marginRight: 10,
+    },
+    radioCircleSelected: {
+        backgroundColor: 'black',
+    },
+    radioLabel: {
+        fontSize: 16,
     },
     button: {
-        backgroundColor: '#8B4513',
         paddingVertical: 12,
         paddingHorizontal: 15,
         borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 15,
     },
     buttonText: {
-        color: '#FFF',
-        fontSize: 16,
+        fontSize: 30,
         fontWeight: 'bold',
     },
     image: {
