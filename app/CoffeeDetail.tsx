@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -10,7 +9,7 @@ interface Coffee {
     description: string;
     ingredients: string[];
     image: string;
-    type: string
+    type: string;
 }
 
 export default function CoffeeDetail() {
@@ -49,27 +48,6 @@ export default function CoffeeDetail() {
 
         fetchCoffeeDetails();
     }, [id]);
-
-    const markAsFavorite = async () => {
-        if (!coffee) return;
-
-        try {
-            const favoritesJson = await AsyncStorage.getItem('favorites');
-            const favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
-            const isFavorite = favorites.some((item: Coffee) => item.id === coffee.id);
-
-            if (isFavorite) {
-                alert(`${coffee.title} is already marked as favorite.`);
-                return;
-            }
-
-            favorites.push(coffee);
-            await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
-            alert(`${coffee.title} has been added to your favorites.`);
-        } catch (error) {
-            console.error('Error marking favorite:', error);
-        }
-    };
 
     const setReminder = async () => {
         try {
@@ -126,12 +104,18 @@ export default function CoffeeDetail() {
             <Text style={styles.title}>{coffee.title}</Text>
             <Image source={{ uri: coffee.image }} style={styles.image} />
             <Text style={styles.description}>{coffee.description}</Text>
-            {/*<Text style={styles.ingredients}>Ingredients: {coffee.ingredients.join(', ')}</Text>*/}
 
-            <TouchableOpacity style={styles.button} onPress={markAsFavorite}>
-                <Text style={styles.buttonText}>Mark as Favorite</Text>
-            </TouchableOpacity>
+            {/* Ingredients Section */}
+            <Text style={styles.ingredientsTitle}>Ingredients:</Text>
+            <FlatList
+                data={coffee.ingredients}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                    <Text style={styles.ingredientItem}>- {item}</Text>
+                )}
+            />
 
+            {/* Reminder Section */}
             <View style={styles.reminderContainer}>
                 <Text style={styles.reminderText}>Set a Reminder (in minutes):</Text>
                 <TextInput
@@ -173,11 +157,16 @@ const styles = StyleSheet.create({
         color: '#4B4B4B',
         marginBottom: 10,
     },
-    ingredients: {
-        fontSize: 14,
-        fontStyle: 'italic',
-        color: '#6B6B6B',
-        marginBottom: 20,
+    ingredientsTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#8B4513',
+        marginBottom: 10,
+    },
+    ingredientItem: {
+        fontSize: 16,
+        color: '#4B4B4B',
+        marginBottom: 5,
     },
     button: {
         backgroundColor: '#8B4513',
