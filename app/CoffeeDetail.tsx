@@ -10,40 +10,35 @@ interface Coffee {
     description: string;
     ingredients: string[];
     image: string;
+    type: string
 }
 
 export default function CoffeeDetail() {
-    const router = useRouter();
-    const { id, type } = useLocalSearchParams<{ id: string, type: string }>(); // 'type' from query params
-    console.log(id, typeof id);
+    const { id, type } = useLocalSearchParams<{ id: string, type: string }>();
     const [coffee, setCoffee] = useState<Coffee | null>(null);
     const [reminderTime, setReminderTime] = useState('');
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch the coffee details from the API based on the type
+    // Fetch the coffee details from the API
     useEffect(() => {
         const fetchCoffeeDetails = async () => {
-            if (!id || !type) {
-                setError('Missing coffee ID or type.');
+            if (!id) {
+                setError('Missing coffee ID.');
                 setLoading(false);
                 return;
             }
 
             try {
-                const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
+                console.log(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
+                const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
-                const data = await response.json();
-                const coffee = data.find((item: Coffee) => item.id.toString() === id); // Find the coffee by ID
+                const coffeeData: Coffee = await response.json();
 
-                if (coffee) {
-                    setCoffee(coffee);
-                } else {
-                    setError('Coffee not found.');
-                }
+                setCoffee(coffeeData);
             } catch (error) {
                 console.error('Error fetching coffee details:', error);
                 setError('Failed to load coffee details.');
@@ -53,7 +48,7 @@ export default function CoffeeDetail() {
         };
 
         fetchCoffeeDetails();
-    }, [id, type]);
+    }, [id]);
 
     const markAsFavorite = async () => {
         if (!coffee) return;
@@ -131,7 +126,7 @@ export default function CoffeeDetail() {
             <Text style={styles.title}>{coffee.title}</Text>
             <Image source={{ uri: coffee.image }} style={styles.image} />
             <Text style={styles.description}>{coffee.description}</Text>
-            <Text style={styles.ingredients}>Ingredients: {coffee.ingredients.join(', ')}</Text>
+            {/*<Text style={styles.ingredients}>Ingredients: {coffee.ingredients.join(', ')}</Text>*/}
 
             <TouchableOpacity style={styles.button} onPress={markAsFavorite}>
                 <Text style={styles.buttonText}>Mark as Favorite</Text>

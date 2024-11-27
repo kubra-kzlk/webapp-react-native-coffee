@@ -1,35 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Coffee, IceCream, Plus, Heart } from 'lucide-react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
+
 interface Coffee {
   id: string;
   title: string;
+  type: string;
 }
 
-type RootStackParamList = {
-  Home: undefined;
-  CoffeeList: { type: string };
-  CoffeeDetail: { coffee: any };
-  AddCoffee: undefined;
-};
-
-type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
-
-interface HomeScreenProps {
-  navigation: HomeScreenNavigationProp;
-}
-
-export default function HomeScreen({ }: HomeScreenProps) {
-  const [favorites, setFavorites] = useState([]);
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+export default function HomeScreen() {
+  const [favorites, setFavorites] = useState<Coffee[]>([]);
+  const router = useRouter();
 
   const getFavorites = async () => {
-    try {                     //to fetch and display user favorites
+    try {
       const favoritesData = await AsyncStorage.getItem('favorites');
-      // If favoritesData is null, fallback to an empty array
       const parsedFavorites = favoritesData ? JSON.parse(favoritesData) : [];
       setFavorites(parsedFavorites);
     } catch (error) {
@@ -38,14 +25,16 @@ export default function HomeScreen({ }: HomeScreenProps) {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', getFavorites);
-    return unsubscribe;
-  }, [navigation]);
+    getFavorites();
+  }, []);
 
   const renderFavoriteItem = ({ item }: { item: Coffee }) => (
     <TouchableOpacity
       style={styles.favoriteItem}
-      onPress={() => navigation.navigate('CoffeeDetail', { coffee: item })}
+      onPress={() => router.push({
+        pathname: '/CoffeeDetail',
+        params: { id: item.id, type: item.type },
+      })}
     >
       <Heart size={18} color="#8B4513" />
       <Text style={styles.favoriteItemText}>{item.title}</Text>
@@ -53,8 +42,6 @@ export default function HomeScreen({ }: HomeScreenProps) {
   );
 
   return (
-
-
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Find the best coffee for you</Text>
@@ -62,14 +49,14 @@ export default function HomeScreen({ }: HomeScreenProps) {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('CoffeeList', { type: 'hot' })}
+          onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })}
         >
           <Coffee size={24} color="#FFF" />
           <Text style={styles.buttonText}>Hot Coffee</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('CoffeeList', { type: 'iced' })}
+          onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}
         >
           <IceCream size={24} color="#FFF" />
           <Text style={styles.buttonText}>Iced Coffee</Text>
@@ -77,7 +64,7 @@ export default function HomeScreen({ }: HomeScreenProps) {
       </View>
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('AddCoffee')}
+        onPress={() => router.push('/AddCoffee')}
       >
         <Plus size={24} color="#FFF" />
         <Text style={styles.addButtonText}>Add New Coffee</Text>
@@ -99,14 +86,11 @@ export default function HomeScreen({ }: HomeScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
   },
-  container: {
-    flex: 1
-  },
   header: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 20,
     alignItems: 'center',
   },
@@ -176,4 +160,4 @@ const styles = StyleSheet.create({
     color: '#8B4513',
     textAlign: 'center',
   },
-}); 
+});
