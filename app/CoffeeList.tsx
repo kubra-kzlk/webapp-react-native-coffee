@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+    View,
+    Text,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+    ActivityIndicator,
+    ImageBackground,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ChevronRight } from 'lucide-react-native';
 
 interface Coffee {
     id: string;
@@ -13,7 +22,7 @@ export default function CoffeeList() {
     const [coffees, setCoffees] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    //een API aanspreken met een GET request om data op te halen.
+    // Fetch coffee data from the API
     useEffect(() => {
         const fetchCoffees = async () => {
             try {
@@ -35,26 +44,39 @@ export default function CoffeeList() {
 
     return (
         <View style={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color="#8B4513" />
-            ) : (
-                <FlatList
-                    data={coffees}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }: { item: Coffee }) => (
-                        <TouchableOpacity
-                            style={styles.itemContainer}
-                            onPress={() => router.push({
-                                pathname: '/CoffeeDetail',
-                                params: { id: item.id.toString(), type: type }
-                            })}
-                        >
-                            <Text style={styles.itemText}>{item.title}</Text>
-                        </TouchableOpacity>
-                    )}
-                    ListEmptyComponent={<Text style={styles.emptyText}>No coffee available.</Text>}
-                />
-            )}
+            <ImageBackground
+                source={require('../assets/images/beans.jpg')}
+                style={styles.backgroundImage}
+                imageStyle={{ opacity: 0.4 }}
+            >
+                <Text style={styles.title}>{type === 'hot' ? 'Hot Coffees' : 'Iced Coffees'}</Text>
+
+                {loading ? (
+                    <ActivityIndicator size="large" color="#8B4513" />
+                ) : (
+                    <FlatList
+                        data={coffees}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }: { item: Coffee }) => (
+                            <TouchableOpacity
+                                style={styles.itemContainer}
+                                onPress={() =>
+                                    router.push({
+                                        pathname: '/CoffeeDetail',
+                                        params: { id: item.id.toString(), type: type },
+                                    })
+                                }
+                            >
+                                <Text style={styles.itemText}>{item.title}</Text>
+                                <ChevronRight color="#8B4513" />
+                            </TouchableOpacity>
+                        )}
+                        ListEmptyComponent={
+                            <Text style={styles.emptyText}>No coffee recipes available for this type.</Text>
+                        }
+                    />
+                )}
+            </ImageBackground>
         </View>
     );
 }
@@ -62,16 +84,28 @@ export default function CoffeeList() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5E6D3',
-        padding: 10,
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 60,
+    },
+    title: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
     },
     itemContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         backgroundColor: '#FFF',
         padding: 15,
         borderRadius: 8,
-        marginBottom: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
+        marginBottom: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -79,14 +113,13 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     itemText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#8B4513',
+        fontSize: 18,
+        fontWeight: 'bold'
     },
     emptyText: {
         textAlign: 'center',
-        color: '#8B4513',
         fontStyle: 'italic',
         marginTop: 20,
+        fontSize: 18,
     },
 });

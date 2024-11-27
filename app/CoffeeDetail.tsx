@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    ActivityIndicator,
+    FlatList,
+    ImageBackground,
+} from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { Bell, ShoppingBasket } from 'lucide-react-native';
 
 interface Coffee {
     id: string;
@@ -13,7 +24,7 @@ interface Coffee {
 }
 
 export default function CoffeeDetail() {
-    const { id, type } = useLocalSearchParams<{ id: string, type: string }>();
+    const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
     const [coffee, setCoffee] = useState<Coffee | null>(null);
     const [reminderTime, setReminderTime] = useState('');
     const [loading, setLoading] = useState(true);
@@ -29,14 +40,12 @@ export default function CoffeeDetail() {
             }
 
             try {
-                console.log(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
                 const coffeeData: Coffee = await response.json();
-
                 setCoffee(coffeeData);
             } catch (error) {
                 console.error('Error fetching coffee details:', error);
@@ -101,34 +110,35 @@ export default function CoffeeDetail() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{coffee.title}</Text>
-            <Image source={{ uri: coffee.image }} style={styles.image} />
-            <Text style={styles.description}>{coffee.description}</Text>
+            <ImageBackground
+                source={require('../assets/images/beans.jpg')}
+                style={styles.backgroundImage}
+                imageStyle={{ opacity: 0.3 }}
+            >
+                <Text style={styles.title}>{coffee.title}</Text>
+                <Image source={{ uri: coffee.image }} style={styles.image} />
+                <Text style={styles.description}>{coffee.description}</Text>
 
-            {/* Ingredients Section */}
-            <Text style={styles.ingredientsTitle}>Ingredients:</Text>
-            <FlatList
-                data={coffee.ingredients}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    <Text style={styles.ingredientItem}>- {item}</Text>
-                )}
-            />
-
-            {/* Reminder Section */}
-            <View style={styles.reminderContainer}>
-                <Text style={styles.reminderText}>Set a Reminder (in minutes):</Text>
-                <TextInput
-                    style={styles.reminderInput}
-                    placeholder="Minutes"
-                    keyboardType="numeric"
-                    value={reminderTime}
-                    onChangeText={setReminderTime}
+                <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="black" />  Ingredients:</Text>
+                <FlatList
+                    data={coffee.ingredients}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>}
                 />
-                <TouchableOpacity style={styles.button} onPress={setReminder}>
-                    <Text style={styles.buttonText}>Set Reminder</Text>
-                </TouchableOpacity>
-            </View>
+
+                <View style={styles.reminderContainer}>
+                    <TextInput
+                        style={styles.reminderInput}
+                        placeholder="Minutes"
+                        keyboardType="numeric"
+                        value={reminderTime}
+                        onChangeText={setReminderTime}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={setReminder}>
+                        <Text style={styles.buttonText}>Set Reminder</Text><Bell size={30} color="black" />
+                    </TouchableOpacity>
+                </View>
+            </ImageBackground>
         </View>
     );
 }
@@ -136,88 +146,78 @@ export default function CoffeeDetail() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5E6D3',
-        padding: 20,
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 60,
     },
     title: {
-        fontSize: 28,
+        fontSize: 36,
         fontWeight: 'bold',
-        color: '#8B4513',
-        marginBottom: 15,
         textAlign: 'center',
+        marginBottom: 15,
     },
     image: {
         width: '100%',
         height: 250,
         borderRadius: 10,
         marginBottom: 15,
+        alignSelf: 'center',
     },
     description: {
         fontSize: 16,
-        color: '#4B4B4B',
-        marginBottom: 10,
+        textAlign: 'justify',
+        marginBottom: 20,
     },
     ingredientsTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#8B4513',
         marginBottom: 10,
     },
     ingredientItem: {
         fontSize: 16,
-        color: '#4B4B4B',
         marginBottom: 5,
     },
     button: {
-        backgroundColor: '#8B4513',
         paddingVertical: 12,
         paddingHorizontal: 15,
         borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 10,
+        marginTop: 10,
     },
     buttonText: {
-        color: '#FFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
     reminderContainer: {
-        marginTop: 20,
-    },
-    reminderText: {
-        fontSize: 16,
-        color: '#8B4513',
-        marginBottom: 10,
+        padding: 70
     },
     reminderInput: {
         height: 40,
-        borderColor: '#A0522D',
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginBottom: 15,
-        backgroundColor: '#FFF',
+        marginBottom: 1,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5E6D3',
     },
     loadingText: {
         fontSize: 16,
-        color: '#8B4513',
         marginTop: 10,
     },
     errorContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5E6D3',
     },
     errorText: {
         fontSize: 16,
-        color: '#D9534F',
         textAlign: 'center',
     },
 });

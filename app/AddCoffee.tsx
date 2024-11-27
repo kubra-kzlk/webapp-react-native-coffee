@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, I
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
+import { Images, Coffee, GlassWater } from 'lucide-react-native';
 
 export default function AddCoffee() {
     const router = useRouter();
@@ -98,7 +99,6 @@ export default function AddCoffee() {
                     onChangeText={setIngredients}
                 />
 
-                {/* Coffee Type Selection */}
                 <Text style={styles.typeTitle}>Select Coffee Type:</Text>
                 <View style={styles.radioContainer}>
                     <TouchableOpacity
@@ -106,23 +106,24 @@ export default function AddCoffee() {
                         onPress={() => setType('hot')}
                     >
                         <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}>Hot Coffee</Text>
+                        <Text style={styles.radioLabel}><Coffee size={20} color="black" />  Hot Coffee </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.radioButton}
                         onPress={() => setType('iced')}
                     >
                         <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}>Iced Coffee</Text>
+                        <Text style={styles.radioLabel}><GlassWater size={20} color="black" /> Iced Coffee</Text>
                     </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
-                    <Text style={styles.buttonText}>Pick an Image</Text>
+
+                    <Text style={styles.buttonText}>Pick an Image <Images size={20} color="black" /></Text>
                 </TouchableOpacity>
                 {image && <Image source={{ uri: image }} style={styles.image} />}
                 <TouchableOpacity style={styles.button} onPress={saveCoffee}>
-                    <Text style={styles.buttonText}>Save Coffee</Text>
+                    <Text style={styles.buttonText}>Save Coffee <Coffee size={30} color="black" /></Text>
                 </TouchableOpacity>
             </ImageBackground>
         </View>
@@ -141,24 +142,32 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 50,
         fontWeight: 'bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: 150,
     },
     input: {
         height: 40,
-        borderWidth: 1,
+        width: '80%',
+        alignSelf: 'center',
+        borderWidth: 1.5,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginBottom: 10,
+        marginBottom: 20,
+        fontWeight: 'bold',
+        fontSize: 20,
 
     },
     typeTitle: {
-        fontSize: 18,
+        alignSelf: 'center',
+        fontSize: 28,
         fontWeight: 'bold',
         marginBottom: 10
     },
     radioContainer: {
+        alignSelf: 'center',
         flexDirection: 'row',
-        marginBottom: 1
+        marginBottom: 1,
+
     },
     radioButton: {
         flexDirection: 'row',
@@ -176,13 +185,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
     },
     radioLabel: {
-        fontSize: 16,
+        fontSize: 20,
     },
     button: {
         paddingVertical: 12,
         paddingHorizontal: 15,
         borderRadius: 8,
         alignItems: 'center',
+        marginBottom: 100,
     },
     buttonText: {
         fontSize: 30,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { GlassWater, Plus, Coffee } from 'lucide-react-native';
+import { GlassWater, Plus, Coffee, CirclePlus } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -13,11 +13,10 @@ export default function HomeScreen() {
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.4 }}
       >
-        {/* Header */}
+
         <Text style={styles.headerTitle}>Find your favorite coffee taste!</Text>
         <Text style={styles.headerSubtitle}>Find and add your favorite coffee recipes</Text>
 
-        {/* Buttons */}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={[styles.button]}
@@ -36,13 +35,12 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Add New Coffee */}
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => router.push('/AddCoffee')}
         >
-          <Plus size={44} color="black" />
-          <Text style={styles.addButtonText}>Add New Coffee</Text>
+          <CirclePlus size={37} color="black" />
+          <Text style={styles.addButtonText}> Add New Coffee</Text>
         </TouchableOpacity>
       </ImageBackground>
     </View>
@@ -55,8 +53,8 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     flex: 1,
-    resizeMode: 'cover', // Make sure the image covers the entire screen
-    justifyContent: 'center', // Center content vertically
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 50,
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   buttonText: {
-    fontSize: 30,
+    fontSize: 33,
     fontWeight: 'bold',
   },
   addButton: {
