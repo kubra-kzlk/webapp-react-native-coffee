@@ -119,7 +119,7 @@ export default function CoffeeDetail() {
                 <Image source={{ uri: coffee.image }} style={styles.image} />
                 <Text style={styles.description}>{coffee.description}</Text>
 
-                <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="black" />  Ingredients:</Text>
+                <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="#654321" />  Ingredients:</Text>
                 <FlatList
                     data={coffee.ingredients}
                     keyExtractor={(item, index) => index.toString()}
@@ -135,7 +135,7 @@ export default function CoffeeDetail() {
                         onChangeText={setReminderTime}
                     />
                     <TouchableOpacity style={styles.button} onPress={setReminder}>
-                        <Text style={styles.buttonText}>Set Reminder</Text><Bell size={30} color="black" />
+                        <Text style={styles.buttonText}>Set Reminder</Text><Bell size={30} color="#654321" />
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
@@ -159,27 +159,32 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 15,
+        color: "#654321"
     },
     image: {
         width: '100%',
         height: 250,
-        borderRadius: 10,
+        borderRadius: 125,
         marginBottom: 15,
         alignSelf: 'center',
+        overflow: 'hidden',
     },
     description: {
-        fontSize: 16,
+        fontSize: 20,
         textAlign: 'justify',
+        color: "#654321",
         marginBottom: 20,
     },
     ingredientsTitle: {
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 10,
+        color: "#654321"
     },
     ingredientItem: {
-        fontSize: 16,
+        fontSize: 20,
         marginBottom: 5,
+        color: "#654321"
     },
     button: {
         paddingVertical: 12,
@@ -191,16 +196,19 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
+        color: "#654321"
     },
     reminderContainer: {
         padding: 70
     },
     reminderInput: {
         height: 40,
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 8,
         paddingHorizontal: 10,
         marginBottom: 1,
+        borderColor: '#654321',
+
     },
     loadingContainer: {
         flex: 1,

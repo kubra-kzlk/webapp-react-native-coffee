@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, I
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { Images, Coffee, GlassWater } from 'lucide-react-native';
+import { Images, Coffee, GlassWater, Save } from 'lucide-react-native';
 
 export default function AddCoffee() {
     const router = useRouter();
@@ -106,24 +106,24 @@ export default function AddCoffee() {
                         onPress={() => setType('hot')}
                     >
                         <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}><Coffee size={20} color="black" />  Hot Coffee </Text>
+                        <Text style={styles.radioLabel}><Coffee size={20} color="#654321" />  Hot Coffee </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.radioButton}
                         onPress={() => setType('iced')}
                     >
                         <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}><GlassWater size={20} color="black" /> Iced Coffee</Text>
+                        <Text style={styles.radioLabel}><GlassWater size={20} color="#654321" /> Iced Coffee</Text>
                     </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
 
-                    <Text style={styles.buttonText}>Pick an Image <Images size={20} color="black" /></Text>
+                    <Text style={styles.buttonText}>Pick an Image <Images size={20} color="#654321" /></Text>
                 </TouchableOpacity>
                 {image && <Image source={{ uri: image }} style={styles.image} />}
                 <TouchableOpacity style={styles.button} onPress={saveCoffee}>
-                    <Text style={styles.buttonText}>Save Coffee <Coffee size={30} color="black" /></Text>
+                    <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#654321" /></Text>
                 </TouchableOpacity>
             </ImageBackground>
         </View>
@@ -144,24 +144,27 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 150,
+        color: "#654321"
     },
     input: {
         height: 40,
         width: '80%',
         alignSelf: 'center',
-        borderWidth: 1.5,
+        borderWidth: 2,
         borderRadius: 8,
         paddingHorizontal: 10,
         marginBottom: 20,
         fontWeight: 'bold',
         fontSize: 20,
+        borderColor: '#654321',
 
     },
     typeTitle: {
         alignSelf: 'center',
         fontSize: 28,
         fontWeight: 'bold',
-        marginBottom: 10
+        marginBottom: 10,
+        color: "#654321"
     },
     radioContainer: {
         alignSelf: 'center',
@@ -173,6 +176,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: 20,
+
     },
     radioCircle: {
         width: 20,
@@ -180,12 +184,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 2,
         marginRight: 10,
+
     },
     radioCircleSelected: {
-        backgroundColor: 'black',
+        backgroundColor: '#654321',
     },
     radioLabel: {
         fontSize: 20,
+        color: "#654321"
     },
     button: {
         paddingVertical: 12,
@@ -193,10 +199,12 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         marginBottom: 100,
+
     },
     buttonText: {
         fontSize: 30,
         fontWeight: 'bold',
+        color: "#654321"
     },
     image: {
         width: '100%',

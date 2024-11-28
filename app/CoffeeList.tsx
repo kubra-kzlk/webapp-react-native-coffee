@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20,
+        color: "#654321"
     },
     itemContainer: {
         flexDirection: 'row',
@@ -114,12 +115,14 @@ const styles = StyleSheet.create({
     },
     itemText: {
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: "#654321"
     },
     emptyText: {
         textAlign: 'center',
         fontStyle: 'italic',
         marginTop: 20,
         fontSize: 18,
+        color: "#654321"
     },
 });

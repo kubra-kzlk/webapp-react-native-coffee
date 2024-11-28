@@ -9,7 +9,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../assets/images/beans.jpg')}
+        source={require('../assets/images/cpus.jpeg')}
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.4 }}
       >
@@ -22,7 +22,7 @@ export default function HomeScreen() {
             style={[styles.button]}
             onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })}
           >
-            <Coffee size={32} color="black" />
+            <Coffee size={32} color="#654321" />
             <Text style={styles.buttonText}>Hot Coffee</Text>
           </TouchableOpacity>
 
@@ -30,7 +30,7 @@ export default function HomeScreen() {
             style={[styles.button]}
             onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}
           >
-            <GlassWater size={32} color="black" />
+            <GlassWater size={32} color="#654321" />
             <Text style={styles.buttonText}>Iced Coffee</Text>
           </TouchableOpacity>
         </View>
@@ -39,7 +39,7 @@ export default function HomeScreen() {
           style={styles.addButton}
           onPress={() => router.push('/AddCoffee')}
         >
-          <CirclePlus size={37} color="black" />
+          <CirclePlus size={37} color="#654321" />
           <Text style={styles.addButtonText}> Add New Coffee</Text>
         </TouchableOpacity>
       </ImageBackground>
@@ -59,12 +59,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 50,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: "#654321"
   },
   headerSubtitle: {
     fontSize: 20,
     textAlign: 'center',
     marginBottom: 320,
+    color: "#654321"
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -76,11 +78,13 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+
   },
   buttonText: {
     fontSize: 33,
     fontWeight: 'bold',
+    color: "#654321"
   },
   addButton: {
     flexDirection: 'row',
@@ -89,5 +93,6 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 40,
     fontWeight: 'bold',
+    color: "#654321"
   },
 });
