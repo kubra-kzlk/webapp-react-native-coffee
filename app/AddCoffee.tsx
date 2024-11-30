@@ -11,7 +11,7 @@ export default function AddCoffee() {
     const [description, setDescription] = useState('');
     const [ingredients, setIngredients] = useState('');
     const [image, setImage] = useState<string | null>(null);
-    const [type, setType] = useState<'hot' | 'iced' | null>(null); // Coffee type state
+    const [type, setType] = useState<'hot' | 'iced' | null>(null);
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -44,28 +44,38 @@ export default function AddCoffee() {
         }
 
         const newCoffee = {
-            id: Date.now().toString(),
             title,
             description,
             ingredients: ingredients.split(',').map(item => item.trim()).filter(item => item !== ''),
             image,
             type,
         };
+        // Determine the correct API endpoint based on the coffee type
+        const apiUrl = type === 'hot'
+            ? 'https://sampleapis.assimilate.be/coffee/hot'
+            : 'https://sampleapis.assimilate.be/coffee/iced';
 
         try {
-            // Get existing coffees
-            const existingCoffeesJson = await AsyncStorage.getItem('coffees');
-            const existingCoffees = existingCoffeesJson ? JSON.parse(existingCoffeesJson) : [];
+            // Make a POST request to the appropriate API based on the type
+            const response = await fetch(apiUrl, {
+                method: 'POST', // POST to add new coffee
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newCoffee), // Send the coffee data in the request body
+            });
+            console.log('Response status:', response.status); // Status code
+            const responseBody = await response.json();
+            console.log('Response body:', responseBody); // Log the actual response from the API            
 
-            // Add new coffee to the list
-            const updatedCoffees = [...existingCoffees, newCoffee];
-
-            // Save updated coffees list
-            await AsyncStorage.setItem('coffees', JSON.stringify(updatedCoffees));
-
-            Alert.alert('Success', 'New coffee added successfully!', [
-                { text: 'OK', onPress: () => router.push('/') }
-            ]);
+            // Check if the request was successful
+            if (response.ok) {
+                Alert.alert('Success', 'New coffee added successfully!', [
+                    { text: 'OK', onPress: () => router.push('/') }
+                ]);
+            } else {
+                Alert.alert('Error', 'Failed to add coffee. Please try again.');
+            }
         } catch (error) {
             console.error('Error saving coffee:', error);
             Alert.alert('Error', 'Failed to save coffee. Please try again.');
