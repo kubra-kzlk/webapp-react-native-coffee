@@ -4,15 +4,12 @@ import {
     Text,
     StyleSheet,
     Image,
-    TextInput,
-    TouchableOpacity,
     ActivityIndicator,
     FlatList,
     ImageBackground,
 } from 'react-native';
-import * as Notifications from 'expo-notifications';
 import { useLocalSearchParams } from 'expo-router';
-import { Bell, ShoppingBasket } from 'lucide-react-native';
+import { ShoppingBasket } from 'lucide-react-native';
 
 interface Coffee {
     id: string;
@@ -26,7 +23,6 @@ interface Coffee {
 export default function CoffeeDetail() {
     const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
     const [coffee, setCoffee] = useState<Coffee | null>(null);
-    const [reminderTime, setReminderTime] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -57,31 +53,6 @@ export default function CoffeeDetail() {
 
         fetchCoffeeDetails();
     }, [id]);
-
-    const setReminder = async () => {
-        try {
-            const timeInSeconds = parseInt(reminderTime) * 60;
-            if (isNaN(timeInSeconds) || timeInSeconds <= 0) {
-                alert('Please enter a valid time in minutes.');
-                return;
-            }
-
-            if (!coffee) return;
-
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: 'Coffee Reminder',
-                    body: `Time to try your favorite coffee: ${coffee.title}!`,
-                    data: { coffeeId: coffee.id },
-                },
-                trigger: 0,
-            });
-
-            alert('Reminder set for this coffee!');
-        } catch (error) {
-            console.error('Error scheduling notification:', error);
-        }
-    };
 
     if (loading) {
         return (
@@ -125,19 +96,6 @@ export default function CoffeeDetail() {
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>}
                 />
-
-                <View style={styles.reminderContainer}>
-                    <TextInput
-                        style={styles.reminderInput}
-                        placeholder="Minutes"
-                        keyboardType="numeric"
-                        value={reminderTime}
-                        onChangeText={setReminderTime}
-                    />
-                    <TouchableOpacity style={styles.button} onPress={setReminder}>
-                        <Text style={styles.buttonText}>Set Reminder</Text><Bell size={30} color="#654321" />
-                    </TouchableOpacity>
-                </View>
             </ImageBackground>
         </View>
     );
@@ -185,30 +143,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: 5,
         color: "#654321"
-    },
-    button: {
-        paddingVertical: 12,
-        paddingHorizontal: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    buttonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: "#654321"
-    },
-    reminderContainer: {
-        padding: 70
-    },
-    reminderInput: {
-        height: 40,
-        borderWidth: 2,
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginBottom: 1,
-        borderColor: '#654321',
-
     },
     loadingContainer: {
         flex: 1,
