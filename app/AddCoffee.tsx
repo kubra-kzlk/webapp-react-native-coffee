@@ -1,10 +1,9 @@
-import React, { RefObject, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker'; //expo compo image picker: allow users to upload images from their gallery
 import { useRouter } from 'expo-router';
 import { Images, Coffee, GlassWater, Save } from 'lucide-react-native';
-import { Camera } from 'expo-camera';
 
 export default function AddCoffee() {
     const router = useRouter();
@@ -13,34 +12,6 @@ export default function AddCoffee() {
     const [ingredients, setIngredients] = useState('');
     const [image, setImage] = useState<string | null>(null);
     const [type, setType] = useState<'hot' | 'iced' | null>(null);
-
-    const [cameraPermission, setCameraPermission] = useState(null);
-    const [cameraRef, setCameraRef] = useState<RefObject<Camera> | null>(null);
-    const [showCamera, setShowCamera] = useState(false); // Toggle to show camera
-
-    const requestCameraPermissions = async () => {
-        const { status } = await Camera.requestCameraPermissionsAsync();
-        setCameraPermission(status === 'granted');
-        if (status !== 'granted') {
-            Alert.alert('Permission Required', 'Camera access is needed to take a photo.');
-        }
-    };
-
-    const takePhoto = async () => {
-        if (cameraRef) {
-            const photo = await cameraRef.takePictureAsync();
-            setImage(photo.uri); // Save the photo URI
-            setShowCamera(false); // Hide the camera after taking a photo
-        }
-    };
-
-    const openCamera = async () => {
-        await requestCameraPermissions();
-        if (cameraPermission) {
-            setShowCamera(true);
-        }
-    };
-
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -113,81 +84,61 @@ export default function AddCoffee() {
 
     return (
         <View style={styles.container}>
-            {showCamera ? (
-                <Camera
-                    style={{ flex: 1 }}
-                    ref={(ref) => setCameraRef(ref as Camera)} // Type assertion here
-                >
-                    <View style={styles.cameraButtonContainer}>
-                        <TouchableOpacity style={styles.cameraButton} onPress={takePhoto}>
-                            <Text style={styles.cameraButtonText}>Capture</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.cameraButton} onPress={() => setShowCamera(false)}>
-                            <Text style={styles.cameraButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Camera>
-            ) : (
-                <ImageBackground
-                    source={require('../assets/images/beans.jpg')}
-                    style={styles.backgroundImage}
-                    imageStyle={{ opacity: 0.4 }}
-                >
-                    <Text style={styles.title}>Add New Coffee</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Title"
-                        value={title}
-                        onChangeText={setTitle}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Description"
-                        value={description}
-                        onChangeText={setDescription}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Ingredients (comma separated)"
-                        value={ingredients}
-                        onChangeText={setIngredients}
-                    />
+            <ImageBackground
+                source={require('../assets/images/beans.jpg')}
+                style={styles.backgroundImage}
+                imageStyle={{ opacity: 0.4 }}
+            >
+                <Text style={styles.title}>Add New Coffee</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Title"
+                    value={title}
+                    onChangeText={setTitle}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Description"
+                    value={description}
+                    onChangeText={setDescription}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ingredients (comma separated)"
+                    value={ingredients}
+                    onChangeText={setIngredients}
+                />
 
-                    <Text style={styles.typeTitle}>Select Coffee Type:</Text>
-                    <View style={styles.radioContainer}>
-                        <TouchableOpacity
-                            style={styles.radioButton}
-                            onPress={() => setType('hot')}
-                        >
-                            <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
-                            <Text style={styles.radioLabel}><Coffee size={20} color="#654321" />  Hot Coffee </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.radioButton}
-                            onPress={() => setType('iced')}
-                        >
-                            <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
-                            <Text style={styles.radioLabel}><GlassWater size={20} color="#654321" /> Iced Coffee</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <TouchableOpacity style={styles.button} onPress={pickImage}>
-                        <Text style={styles.typeTitle}>Pick an Image <Images size={20} color="#654321" /></Text>
+                <Text style={styles.typeTitle}>Select Coffee Type:</Text>
+                <View style={styles.radioContainer}>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setType('hot')}
+                    >
+                        <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
+                        <Text style={styles.radioLabel}><Coffee size={20} color="#654321" />  Hot Coffee </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={openCamera}>
-                        <Text style={styles.typeTitle}>Take a Photo <Camera size={20} color="#654321" /></Text>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setType('iced')}
+                    >
+                        <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
+                        <Text style={styles.radioLabel}><GlassWater size={20} color="#654321" /> Iced Coffee</Text>
                     </TouchableOpacity>
-                    {image && <Image source={{ uri: image }} style={styles.image} />}
+                </View>
 
+                <TouchableOpacity style={styles.button} onPress={pickImage}>
 
-                    <TouchableOpacity style={styles.button} onPress={saveCoffee}>
-                        <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#654321" /></Text>
-                    </TouchableOpacity>
-                </ImageBackground>
-            )}
+                    <Text style={styles.typeTitle}>Pick an Image <Images size={20} color="#654321" /></Text>
+                </TouchableOpacity>
+                {image && <Image source={{ uri: image }} style={styles.image} />}
+                <TouchableOpacity style={styles.button} onPress={saveCoffee}>
+                    <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#654321" /></Text>
+                </TouchableOpacity>
+            </ImageBackground>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -272,19 +223,4 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
     },
-    cameraButtonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginBottom: 20,
-    },
-    cameraButton: {
-        backgroundColor: '#654321',
-        padding: 10,
-        borderRadius: 8,
-    },
-    cameraButtonText: {
-        color: '#fff',
-        fontSize: 18,
-    },
-
-});
+}); 
