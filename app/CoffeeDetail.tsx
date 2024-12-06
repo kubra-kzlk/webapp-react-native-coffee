@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
+    Image,
     StyleSheet,
     Button,
     TouchableOpacity,
@@ -126,6 +127,9 @@ export default function CoffeeDetail() {
 
     return (
         <View style={styles.container}>
+            <View style={styles.logoContainer}>
+                <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
+            </View>
             <ImageBackground
                 source={{ uri: coffee.image }} // Use the API's image URL as the background
                 style={styles.backgroundImage}
@@ -137,7 +141,7 @@ export default function CoffeeDetail() {
                 <Text style={styles.title}>{coffee.title}</Text>
                 <Text style={styles.description}>{coffee.description}</Text>
 
-                <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="#654321" />  Ingredients:</Text>
+                <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="#402024" />  Ingredients:</Text>
                 <FlatList
                     data={coffee.ingredients}
                     keyExtractor={(item, index) => index.toString()}
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 15,
-        color: "#654321"
+        color: "#402024"
     },
     image: {
         width: '100%',
@@ -189,19 +193,19 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 20,
         textAlign: 'justify',
-        color: "#654321",
+        color: "#402024",
         marginBottom: 20,
     },
     ingredientsTitle: {
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 10,
-        color: "#654321"
+        color: "#402024"
     },
     ingredientItem: {
         fontSize: 20,
         marginBottom: 5,
-        color: "#654321"
+        color: "#402024"
     },
     loadingContainer: {
         flex: 1,
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     wikiButton: {
-        backgroundColor: '#8B4513', // Coffee-like color
+        backgroundColor: '#402024', // Coffee-like color
         paddingVertical: 12,
         paddingHorizontal: 25,
         borderRadius: 8,
@@ -234,5 +238,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    logoContainer: {
+        position: 'absolute',
+        top: 1,
+        left: 1,
+        zIndex: 1, // To make sure the logo is on top of other content
+    },
+    logo: {
+        width: 80,
+        height: 80,
+        resizeMode: 'contain',
     },
 });

@@ -19,6 +19,7 @@ interface Coffee {
 export default function HomeScreen() {
   const router = useRouter();
   const [recentlyViewed, setRecentlyViewed] = useState<Coffee[]>([]);
+  const [isLoading, setIsLoading] = useState(true); //bundling page
 
   //lijst recent bekeken koffies
   useEffect(() => {
@@ -45,14 +46,30 @@ export default function HomeScreen() {
   );
 
 
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 3000); // Simulate loading
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
+      </View>
+
       <ImageBackground
         source={require('../assets/images/cpus.jpeg')}
-        style={styles.backgroundImage}
-      >
-        <Text style={styles.headerTitle}>Find your favorite coffee taste!</Text>
+        style={styles.backgroundImage}      >
+
+        <Text style={styles.headerTitle}>     COFFEE CONNECT</Text>
         <Text style={styles.headerSubtitle}>Recently Viewed Coffees:</Text>
         {recentlyViewed.length === 0 ? (
           <Text style={styles.headerSubtitle}>No recently viewed coffees</Text>
@@ -69,7 +86,7 @@ export default function HomeScreen() {
             style={[styles.button]}
             onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })}
           >
-            <Coffee size={32} color="#654321" />
+            <Coffee size={32} color="#402024" />
             <Text style={styles.buttonText}>Hot Coffee</Text>
           </TouchableOpacity>
 
@@ -77,7 +94,7 @@ export default function HomeScreen() {
             style={[styles.button]}
             onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}
           >
-            <GlassWater size={32} color="#654321" />
+            <GlassWater size={32} color="#402024" />
             <Text style={styles.buttonText}>Iced Coffee</Text>
           </TouchableOpacity>
         </View>
@@ -86,7 +103,7 @@ export default function HomeScreen() {
           style={styles.addButton}
           onPress={() => router.push('/AddCoffee')}
         >
-          <Plus size={35} color="#654321" />
+          <Plus size={35} color="#402024" />
           <Text style={styles.addButtonText}> Add New Coffee</Text>
         </TouchableOpacity>
       </ImageBackground>
@@ -96,11 +113,23 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  logoContainer: {
+    position: 'absolute',
+    top: 1,
+    left: 1,
+    zIndex: 1, // To make sure the logo is on top of other content
   },
   backgroundImage: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
   },
   headerTitle: {
     marginBottom: 10,
@@ -108,18 +137,17 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: "#654321"
+    color: "#402024"
   },
   headerSubtitle: {
     fontSize: 20,
 
     textAlign: 'center',
-    color: "#654321"
+    color: "#402024"
   },
   buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginHorizontal: 50
+    justifyContent: 'space-evenly'
   },
   button: {
     width: 140,
@@ -131,7 +159,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 33,
     fontWeight: 'bold',
-    color: "#654321"
+    color: "#402024"
   },
   addButton: {
     flexDirection: 'row',
@@ -141,7 +169,16 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: "#654321"
+    color: "#402024"
   },
-
+  logo: {
+    width: 70,
+    height: 80,
+    resizeMode: 'contain',
+  },
+  applogo: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+  }
 });

@@ -3,6 +3,7 @@ import {
     View,
     Text,
     FlatList,
+    Image,
     StyleSheet,
     TouchableOpacity,
     ActivityIndicator,
@@ -44,6 +45,9 @@ export default function CoffeeList() {
 
     return (
         <View style={styles.container}>
+            <View style={styles.logoContainer}>
+                <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
+            </View>
             <ImageBackground
                 source={require('../assets/images/cpus.jpeg')}
                 style={styles.backgroundImage}
@@ -52,7 +56,7 @@ export default function CoffeeList() {
                 <Text style={styles.title}>{type === 'hot' ? 'Hot Coffees' : 'Iced Coffees'}</Text>
 
                 {loading ? (
-                    <ActivityIndicator size="large" color="#8B4513" />
+                    <ActivityIndicator size="large" color="#402024" />
                 ) : (
                     <FlatList
                         data={coffees}
@@ -68,7 +72,7 @@ export default function CoffeeList() {
                                 }
                             >
                                 <Text style={styles.itemText}>{item.title}</Text>
-                                <ChevronRight color="#8B4513" />
+                                <ChevronRight color="#402024" />
                             </TouchableOpacity>
                         )}
                         ListEmptyComponent={
@@ -85,6 +89,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    logoContainer: {
+        position: 'absolute',
+        top: 1,
+        left: 1,
+        zIndex: 1, // To make sure the logo is on top of other content
+    },
+    logo: {
+        width: 80,
+        height: 80,
+        resizeMode: 'contain',
+    },
     backgroundImage: {
         flex: 1,
         resizeMode: 'cover',
@@ -96,8 +111,9 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 20,
-        color: "#654321"
+        marginBottom: 100,
+        marginTop: -40,
+        color: "#402024"
     },
     itemContainer: {
         flexDirection: 'row',
@@ -106,7 +122,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         padding: 15,
         borderRadius: 8,
-        marginBottom: 15,
+        marginBottom: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -116,13 +132,13 @@ const styles = StyleSheet.create({
     itemText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: "#654321"
+        color: "#402024"
     },
     emptyText: {
         textAlign: 'center',
         fontStyle: 'italic',
         marginTop: 20,
         fontSize: 18,
-        color: "#654321"
+        color: "#402024"
     },
 });

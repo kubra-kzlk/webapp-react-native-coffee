@@ -83,12 +83,15 @@ export default function AddCoffee() {
 
     return (
         <View style={styles.container}>
+            <View style={styles.logoContainer}>
+                <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
+            </View>
             <ImageBackground
                 source={require('../assets/images/cpus.jpeg')}
                 style={styles.backgroundImage}
                 imageStyle={{ opacity: 0.4 }}
             >
-                <Text style={styles.title}>Add New Coffee</Text>
+                <Text style={styles.title}>   Add New Coffee</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Title"
@@ -115,24 +118,24 @@ export default function AddCoffee() {
                         onPress={() => setType('hot')}
                     >
                         <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}><Coffee size={20} color="#654321" />  Hot Coffee </Text>
+                        <Text style={styles.radioLabel}><Coffee size={20} color="#402024" />  Hot Coffee </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.radioButton}
                         onPress={() => setType('iced')}
                     >
                         <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}><GlassWater size={20} color="#654321" /> Iced Coffee</Text>
+                        <Text style={styles.radioLabel}><GlassWater size={20} color="#402024" /> Iced Coffee</Text>
                     </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
 
-                    <Text style={styles.typeTitle}>Pick an Image <Images size={20} color="#654321" /></Text>
+                    <Text style={styles.typeTitle}>Pick an Image <Images size={20} color="#402024" /></Text>
                 </TouchableOpacity>
                 {image && <Image source={{ uri: image }} style={styles.image} />}
                 <TouchableOpacity style={styles.button} onPress={saveCoffee}>
-                    <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#654321" /></Text>
+                    <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#402024" /></Text>
                 </TouchableOpacity>
             </ImageBackground>
         </View>
@@ -142,7 +145,17 @@ export default function AddCoffee() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-
+    },
+    logoContainer: {
+        position: 'absolute',
+        top: 1,
+        left: 1,
+        zIndex: 1, // To make sure the logo is on top of other content
+    },
+    logo: {
+        width: 80,
+        height: 80,
+        resizeMode: 'contain',
     },
     backgroundImage: {
         flex: 1,
@@ -151,10 +164,10 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 50,
-        marginBottom: 100,
+        marginBottom: 200,
         fontWeight: 'bold',
         textAlign: 'center',
-        color: "#654321"
+        color: "#402024"
     },
     input: {
         height: 40,
@@ -166,7 +179,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: 'bold',
         fontSize: 20,
-        borderColor: '#654321',
+        borderColor: '#402024',
 
     },
     typeTitle: {
@@ -174,7 +187,8 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         marginBottom: 10,
-        color: "#654321"
+        color: "#402024"
+        
     },
     radioContainer: {
         alignSelf: 'center',
@@ -194,15 +208,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 2,
         marginRight: 10,
-        borderColor: '#654321',
+        borderColor: '#402024',
 
     },
     radioCircleSelected: {
-        backgroundColor: '#654321',
+        backgroundColor: '#402024',
     },
     radioLabel: {
         fontSize: 20,
-        color: "#654321"
+        color: "#402024"
     },
     button: {
         paddingVertical: 12,
@@ -214,7 +228,8 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 30,
         fontWeight: 'bold',
-        color: "#654321"
+        color: "#402024",
+        marginBottom: 220,
     },
     image: {
         width: '100%',
