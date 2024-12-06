@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { ShoppingBasket } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';  // Import AsyncStorage
 
 interface Coffee {
     id: string;
@@ -43,6 +44,26 @@ export default function CoffeeDetail() {
 
                 const coffeeData: Coffee = await response.json();
                 setCoffee(coffeeData);
+
+                // Save coffee to recently viewed list in AsyncStorage
+                const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
+                let recentlyViewed = storedCoffees ? JSON.parse(storedCoffees) : [];
+
+                // Avoid duplicates: check if the coffee is already in the list
+                const isAlreadyViewed = recentlyViewed.some((item: Coffee) => item.id === coffeeData.id);
+                if (!isAlreadyViewed) {
+                    recentlyViewed = [coffeeData, ...recentlyViewed]; // Add to the top
+                    if (recentlyViewed.length > 3) {
+                        recentlyViewed.pop();  // Remove the oldest coffee (keep the list size to 3)
+                    }
+                }
+                // Save the updated list back to AsyncStorage
+                await AsyncStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+
+
+
+
+
             } catch (error) {
                 console.error('Error fetching coffee details:', error);
                 setError('Failed to load coffee details.');
@@ -82,12 +103,14 @@ export default function CoffeeDetail() {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={require('../assets/images/beans.jpg')}
+                source={{ uri: coffee.image }} // Use the API's image URL as the background
                 style={styles.backgroundImage}
-                imageStyle={{ opacity: 0.3 }}
+                imageStyle={{ opacity: 0.7 }} // Optional, for opacity effect
             >
+                {/* The background will take up 3/4 of the screen */}
+            </ImageBackground>
+            <View style={styles.contentContainer}>
                 <Text style={styles.title}>{coffee.title}</Text>
-                <Image source={{ uri: coffee.image }} style={styles.image} />
                 <Text style={styles.description}>{coffee.description}</Text>
 
                 <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="#654321" />  Ingredients:</Text>
@@ -96,7 +119,7 @@ export default function CoffeeDetail() {
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>}
                 />
-            </ImageBackground>
+            </View>
         </View>
     );
 }
@@ -105,12 +128,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    contentContainer: {
+        flex: 0.50,  // 1/4 of the screen height
+        backgroundColor: 'white', // Optional, for clear background below the image
+        padding: 20,
+
+    },
     backgroundImage: {
-        flex: 1,
+        flex: 0.75,  // 3/4 of the screen height
         resizeMode: 'cover',
         justifyContent: 'center',
         paddingHorizontal: 20,
-        paddingTop: 60,
     },
     title: {
         fontSize: 36,

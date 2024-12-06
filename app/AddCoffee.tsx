@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker'; //expo compo image picker: allow users to upload images from their gallery
 import { useRouter } from 'expo-router';
 import { Images, Coffee, GlassWater, Save } from 'lucide-react-native';
@@ -85,7 +84,7 @@ export default function AddCoffee() {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={require('../assets/images/beans.jpg')}
+                source={require('../assets/images/cpus.jpeg')}
                 style={styles.backgroundImage}
                 imageStyle={{ opacity: 0.4 }}
             >

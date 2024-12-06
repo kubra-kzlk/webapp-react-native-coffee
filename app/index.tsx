@@ -1,21 +1,68 @@
-import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+  FlatList,
+  Image,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { GlassWater, Plus, Coffee, CirclePlus } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+interface Coffee {
+  id: string;
+  title: string;
+}
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [recentlyViewed, setRecentlyViewed] = useState<Coffee[]>([]);
+
+  //lijst recent bekeken koffies
+  useEffect(() => {
+    const saveToRecentCoffees = async () => {
+      const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
+      if (storedCoffees) {
+        setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); // Limit to 3 most recent      }
+      }
+    };
+    saveToRecentCoffees();
+    // Listen for changes to recently viewed
+    const intervalId = setInterval(() => {
+      saveToRecentCoffees();
+    }, 1000); // Re-fetch every 1 second to check for changes
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+
+  // Render coffee name in FlatList
+  const renderCoffee = ({ item }: { item: Coffee }) => (
+    <Text style={styles.headerSubtitle}>{item.title}</Text>
+  );
+
+
 
   return (
     <View style={styles.container}>
       <ImageBackground
         source={require('../assets/images/cpus.jpeg')}
         style={styles.backgroundImage}
-        imageStyle={{ opacity: 0.4 }}
       >
-
         <Text style={styles.headerTitle}>Find your favorite coffee taste!</Text>
-        <Text style={styles.headerSubtitle}>Find and add your favorite coffee recipes</Text>
+        <Text style={styles.headerSubtitle}>Recently Viewed Coffees:</Text>
+        {recentlyViewed.length === 0 ? (
+          <Text style={styles.headerSubtitle}>No recently viewed coffees</Text>
+        ) : (
+          <FlatList
+            data={recentlyViewed}
+            keyExtractor={(item) => item.id}
+            renderItem={renderCoffee}
+          />
+        )}
 
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
@@ -53,10 +100,11 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     flex: 1,
-    resizeMode: 'cover',
     justifyContent: 'center',
   },
   headerTitle: {
+    marginBottom: 10,
+    marginTop: 20,
     fontSize: 50,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -64,8 +112,8 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 20,
+
     textAlign: 'center',
-    marginBottom: 320,
     color: "#654321"
   },
   buttonsContainer: {
@@ -74,7 +122,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 50
   },
   button: {
-    marginTop: 120,
     width: 140,
     height: 140,
     justifyContent: 'center',
@@ -89,10 +136,12 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: 60,
   },
   addButtonText: {
     fontSize: 40,
     fontWeight: 'bold',
     color: "#654321"
   },
+
 });

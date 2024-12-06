@@ -45,9 +45,9 @@ export default function CoffeeList() {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={require('../assets/images/beans.jpg')}
+                source={require('../assets/images/cpus.jpeg')}
                 style={styles.backgroundImage}
-                imageStyle={{ opacity: 0.4 }}
+                imageStyle={{ opacity: 0.8 }}
             >
                 <Text style={styles.title}>{type === 'hot' ? 'Hot Coffees' : 'Iced Coffees'}</Text>
 
