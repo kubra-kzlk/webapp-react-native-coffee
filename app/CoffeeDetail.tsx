@@ -3,7 +3,8 @@ import {
     View,
     Text,
     StyleSheet,
-    Image,
+    Button,
+    TouchableOpacity,
     ActivityIndicator,
     FlatList,
     ImageBackground,
@@ -11,6 +12,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { ShoppingBasket } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';  // Import AsyncStorage
+import * as WebBrowser from 'expo-web-browser';
 
 interface Coffee {
     id: string;
@@ -75,6 +77,28 @@ export default function CoffeeDetail() {
         fetchCoffeeDetails();
     }, [id]);
 
+    // Function to open the Wikipedia page based on the coffee title
+    const openCoffeeWikiPage = (coffeeTitle: string) => {
+        // Clean the coffee title to match Wikipedia's naming conventions (lowercase, replace spaces)
+        const formattedTitle = coffeeTitle.trim().toLowerCase().replace(/\s+/g, '_');  // Wikipedia format
+
+        // Construct the URL for the first attempt (using the coffee title)
+        const wikiUrl = `https://en.wikipedia.org/wiki/${formattedTitle}`;
+
+        // Try to open the specific coffee article
+        WebBrowser.openBrowserAsync(wikiUrl).catch(() => {
+            // If the first attempt fails, try searching for the coffee + 'coffee' (second attempt)
+            const fallbackWikiUrl = `https://en.wikipedia.org/wiki/${formattedTitle}_coffee`;
+
+            // Open the fallback URL (with 'coffee' appended)
+            WebBrowser.openBrowserAsync(fallbackWikiUrl).catch(() => {
+                // Fallback to a general coffee page if both searches fail
+                WebBrowser.openBrowserAsync('https://en.wikipedia.org/wiki/Coffee');
+            });
+        });
+    };
+
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -119,6 +143,13 @@ export default function CoffeeDetail() {
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>}
                 />
+                {/* Button to search for the coffee's Wikipedia page */}
+                <TouchableOpacity
+                    style={styles.wikiButton}
+                    onPress={() => openCoffeeWikiPage(coffee.title)} // Open the Wikipedia page
+                >
+                    <Text style={styles.wikiButtonText}>Learn more about {coffee.title}</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -129,7 +160,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentContainer: {
-        flex: 0.50,  // 1/4 of the screen height
+        flex: 0.60,  // 1/4 of the screen height
         backgroundColor: 'white', // Optional, for clear background below the image
         padding: 20,
 
@@ -189,5 +220,19 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 16,
         textAlign: 'center',
+    },
+    wikiButton: {
+        backgroundColor: '#8B4513', // Coffee-like color
+        paddingVertical: 12,
+        paddingHorizontal: 25,
+        borderRadius: 8,
+        marginTop: 20,
+        alignItems: 'center',
+
+    },
+    wikiButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });

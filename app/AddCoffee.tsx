@@ -141,7 +141,8 @@ export default function AddCoffee() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+
     },
     backgroundImage: {
         flex: 1,
@@ -150,9 +151,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 50,
+        marginBottom: 100,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 150,
         color: "#654321"
     },
     input: {
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 2,
         marginRight: 10,
+        borderColor: '#654321',
 
     },
     radioCircleSelected: {
@@ -206,8 +208,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 15,
         borderRadius: 8,
-        alignItems: 'center',
-        marginBottom: 100,
+        alignItems: 'center'
 
     },
     buttonText: {
@@ -219,7 +220,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 200,
         borderRadius: 10,
-        marginTop: 10,
-        marginBottom: 10,
+        marginBottom: 35,
+        marginHorizontal: 20,
     },
+
 }); 

@@ -86,7 +86,7 @@ export default function HomeScreen() {
           style={styles.addButton}
           onPress={() => router.push('/AddCoffee')}
         >
-          <CirclePlus size={37} color="#654321" />
+          <Plus size={35} color="#654321" />
           <Text style={styles.addButtonText}> Add New Coffee</Text>
         </TouchableOpacity>
       </ImageBackground>
