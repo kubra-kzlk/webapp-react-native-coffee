@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     View,
     Text,
     FlatList,
+    RefreshControl,
     Image,
     StyleSheet,
     TouchableOpacity,
     ActivityIndicator,
     ImageBackground,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 
 interface Coffee {
@@ -22,27 +23,38 @@ export default function CoffeeList() {
     const { type } = useLocalSearchParams();
     const [coffees, setCoffees] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
     // Fetch coffee data from the API
-    useEffect(() => {
-        const fetchCoffees = async () => {
-            try {
-                const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch coffee data');
-                }
-                const data = await response.json();
-                setCoffees(data);
-            } catch (error) {
-                console.error('Error fetching coffee data:', error);
-            } finally {
-                setLoading(false);
+    const fetchCoffees = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch coffee data');
             }
-        };
+            const data = await response.json();
+            setCoffees(data);
+        } catch (error) {
+            console.error('Error fetching coffee data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchCoffees();
-    }, [type]);
+    // Trigger fetch on navigation back
+    useFocusEffect(
+        useCallback(() => {
+            fetchCoffees();
+        }, [type])
+    );
 
+    // Refresh control handler
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchCoffees();
+        setRefreshing(false);
+    };
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
@@ -53,7 +65,7 @@ export default function CoffeeList() {
                 style={styles.backgroundImage}
                 imageStyle={{ opacity: 0.8 }}
             >
-                <Text style={styles.title}>{type === 'hot' ? 'Hot Coffees' : 'Iced Coffees'}</Text>
+                <Text style={styles.title}>{type === 'hot' ? 'Hot coffees' : 'Iced coffees'}</Text>
 
                 {loading ? (
                     <ActivityIndicator size="large" color="#402024" />
@@ -75,8 +87,8 @@ export default function CoffeeList() {
                                 <ChevronRight color="#402024" />
                             </TouchableOpacity>
                         )}
-                        ListEmptyComponent={
-                            <Text style={styles.emptyText}>No coffee recipes available for this type.</Text>
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                         }
                     />
                 )}
@@ -98,6 +110,8 @@ const styles = StyleSheet.create({
     logo: {
         width: 80,
         height: 80,
+        marginTop: 10,
+        marginLeft: 10,
         resizeMode: 'contain',
     },
     backgroundImage: {
@@ -108,19 +122,27 @@ const styles = StyleSheet.create({
         paddingTop: 60,
     },
     title: {
-        fontSize: 40,
+        marginBottom: 50,
+        marginTop: -40,
+        fontSize: 46,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 100,
-        marginTop: -40,
-        color: "#402024"
+        color: "#402024",
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 9,
+        elevation: 6,
+        backgroundColor: '#FFF',
+        padding: 10,
+        borderRadius: 8,
     },
     itemContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#FFF',
-        padding: 15,
+        padding: 12,
         borderRadius: 8,
         marginBottom: 20,
         shadowColor: '#000',
@@ -128,17 +150,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 3,
+
+
     },
     itemText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: "#402024"
-    },
-    emptyText: {
-        textAlign: 'center',
-        fontStyle: 'italic',
-        marginTop: 20,
-        fontSize: 18,
         color: "#402024"
     },
 });

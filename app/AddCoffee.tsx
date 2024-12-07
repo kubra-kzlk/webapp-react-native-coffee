@@ -55,22 +55,26 @@ export default function AddCoffee() {
             : 'https://sampleapis.assimilate.be/coffee/iced';
 
         try {
-            // Make a POST request to the appropriate API based on the type
             const response = await fetch(apiUrl, {
-                method: 'POST', // POST to add new coffee
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM1OTUzMzJ9.d1AD-vAxkIunSHSzhLk1FfFoe72lhsIEj1Fj4Kc_XKg'
                 },
                 body: JSON.stringify(newCoffee), // Send the coffee data in the request body
             });
-            console.log('Response status:', response.status); // Status code
+
+            // Log status and success status of the response
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             const responseBody = await response.json();
             console.log('Response body:', responseBody); // Log the actual response from the API            
 
             // Check if the request was successful
             if (response.ok) {
                 Alert.alert('Success', 'New coffee added successfully!', [
-                    { text: 'OK', onPress: () => router.push('/') }
+                    { text: 'OK', onPress: () => router.back() }
                 ]);
             } else {
                 Alert.alert('Error', 'Failed to add coffee. Please try again.');
@@ -91,7 +95,7 @@ export default function AddCoffee() {
                 style={styles.backgroundImage}
                 imageStyle={{ opacity: 0.4 }}
             >
-                <Text style={styles.title}>   Add New Coffee</Text>
+                <Text style={styles.title}>     Add New Coffee</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Title"
@@ -145,6 +149,8 @@ export default function AddCoffee() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     logoContainer: {
         position: 'absolute',
@@ -155,19 +161,32 @@ const styles = StyleSheet.create({
     logo: {
         width: 80,
         height: 80,
+        marginTop: 11,
+        marginLeft: 24,
         resizeMode: 'contain',
     },
     backgroundImage: {
         flex: 1,
-        resizeMode: 'cover',
         justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover'
     },
     title: {
-        fontSize: 50,
-        marginBottom: 200,
+        marginBottom: 180,
+        fontSize: 46,
         fontWeight: 'bold',
         textAlign: 'center',
-        color: "#402024"
+        color: "#402024",
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 9,
+        elevation: 6,
+        backgroundColor: '#FFF',
+        padding: 10,
+        borderRadius: 8,
     },
     input: {
         height: 40,
@@ -176,10 +195,16 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginBottom: 20,
         fontWeight: 'bold',
         fontSize: 20,
         borderColor: '#402024',
+        backgroundColor: '#FFF',
+        margin: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 9,
+        elevation: 6,
 
     },
     typeTitle: {
@@ -188,7 +213,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         color: "#402024"
-        
+
     },
     radioContainer: {
         alignSelf: 'center',
