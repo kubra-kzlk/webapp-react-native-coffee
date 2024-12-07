@@ -73,9 +73,12 @@ export default function AddCoffee() {
 
             // Check if the request was successful
             if (response.ok) {
-                Alert.alert('Success', 'New coffee added successfully!', [
-                    { text: 'OK', onPress: () => router.back() }
-                ]);
+                //Alert.alert('Success', 'New coffee added successfully!', [
+                // { text: 'OK', onPress: () => router.back() }              ]);
+                router.push({
+                    pathname: '/CoffeeList',
+                    params: { newCoffee: responseBody }, // Pass the newly added coffee
+                });
             } else {
                 Alert.alert('Error', 'Failed to add coffee. Please try again.');
             }
