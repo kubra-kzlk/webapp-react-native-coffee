@@ -73,9 +73,9 @@ export default function AddCoffee() {
 
             // Check if the request was successful
             if (response.ok && responseBody.id) {
-                //Alert.alert('Success', 'New coffee added successfully!', [
-                // { text: 'OK', onPress: () => router.back() }              ]);
-                router.push({
+                Alert.alert('Success', 'New coffee added successfully!', [
+                    { text: 'OK', onPress: () => router.back() }]);
+                router.replace({
                     pathname: '/',
                     params: { id: responseBody.id.toString(), type: newCoffee.type }, // Pass the newly added coffee
                 });
