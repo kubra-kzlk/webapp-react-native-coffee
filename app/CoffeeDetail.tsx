@@ -62,11 +62,6 @@ export default function CoffeeDetail() {
                 }
                 // Save the updated list back to AsyncStorage
                 await AsyncStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
-
-
-
-
-
             } catch (error) {
                 console.error('Error fetching coffee details:', error);
                 setError('Failed to load coffee details.');

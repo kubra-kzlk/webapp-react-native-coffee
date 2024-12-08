@@ -72,12 +72,12 @@ export default function AddCoffee() {
             console.log('Response body:', responseBody); // Log the actual response from the API            
 
             // Check if the request was successful
-            if (response.ok) {
+            if (response.ok && responseBody.id) {
                 //Alert.alert('Success', 'New coffee added successfully!', [
                 // { text: 'OK', onPress: () => router.back() }              ]);
                 router.push({
-                    pathname: '/CoffeeList',
-                    params: { newCoffee: responseBody }, // Pass the newly added coffee
+                    pathname: '/',
+                    params: { id: responseBody.id.toString(), type: newCoffee.type }, // Pass the newly added coffee
                 });
             } else {
                 Alert.alert('Error', 'Failed to add coffee. Please try again.');

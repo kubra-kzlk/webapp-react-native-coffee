@@ -27,9 +27,14 @@ export default function CoffeeList() {
 
     // Fetch coffee data from the API
     const fetchCoffees = async () => {
+        if (!type) {
+            console.error('Error: Coffee type is missing');
+            return;
+        }
         try {
             setLoading(true);
             const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
+            console.log('Fetching data for type:', type);
             if (!response.ok) {
                 throw new Error('Failed to fetch coffee data');
             }
@@ -41,13 +46,10 @@ export default function CoffeeList() {
             setLoading(false);
         }
     };
-
-    // Trigger fetch on navigation back
-    useFocusEffect(
-        useCallback(() => {
-            fetchCoffees();
-        }, [type])
-    );
+    useEffect(() => {
+        console.log('Fetching data for type:', type);
+        fetchCoffees();
+    }, [type]);
 
     // Refresh control handler
     const onRefresh = async () => {
