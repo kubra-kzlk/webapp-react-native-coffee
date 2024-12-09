@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; //expo compo image picker: allow users to upload images from their gallery
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { Images, Coffee, GlassWater, Save } from 'lucide-react-native';
 
+const IMGUR_CLIENT_ID = 'fd7e1825c87d431';
 export default function AddCoffee() {
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [ingredients, setIngredients] = useState('');
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string>('');
     const [type, setType] = useState<'hot' | 'iced' | null>(null);
 
     const pickImage = async () => {
@@ -21,7 +23,7 @@ export default function AddCoffee() {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ["images"], // Use array with MediaType
             allowsEditing: true,
             quality: 1,
         });
@@ -30,6 +32,40 @@ export default function AddCoffee() {
             setImage(result.assets[0].uri); // Save the image URI
         }
     };
+    console.log('Image URI:', image);
+
+    const uploadToImgur = async (uri: string) => {
+        const formData = new FormData();
+        try {
+            // Use expo-file-system to read the file as a base64-encoded string
+            const fileInfo = await FileSystem.readAsStringAsync(uri, {
+                encoding: FileSystem.EncodingType.Base64,
+            });//This function reads the file as a Base64-encoded string, which is necessary for converting the image into a Blob that can be uploaded via FormData.
+            // Append the base64 string directly to the form data
+            formData.append('image', fileInfo);  // Send the base64 string directly in the 'image' field
+
+
+            const response = await fetch('https://api.imgur.com/3/image', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Client-ID fd7e1825c87d431`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                return data.data.link; // Return the URL of the uploaded image
+            } else {
+                throw new Error('Failed to upload image to Imgur');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            Alert.alert('Error', 'Failed to upload image. Please try again.');
+            return null;
+        }
+    };
+
 
     const saveCoffee = async () => {
         if (!title.trim()) {
@@ -42,24 +78,33 @@ export default function AddCoffee() {
             return;
         }
 
+        // Upload the image to Imgur
+        const imageUrl = image ? await uploadToImgur(image) : null;
+
+        if (!imageUrl) {
+            Alert.alert('Error', 'Failed to upload image.');
+            return;
+        }
         const newCoffee = {
             title,
             description,
             ingredients: ingredients.split(',').map(item => item.trim()).filter(item => item !== ''),
-            image,
-            type,
+            image: imageUrl
         };
         // Determine the correct API endpoint based on the coffee type
         const apiUrl = type === 'hot'
             ? 'https://sampleapis.assimilate.be/coffee/hot'
             : 'https://sampleapis.assimilate.be/coffee/iced';
 
+
+
+
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM1OTUzMzJ9.d1AD-vAxkIunSHSzhLk1FfFoe72lhsIEj1Fj4Kc_XKg'
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM3NDEwODR9.RU_UFL6rHgQqMDy5UeqLct7CsZwjfv5Mz-qCqUluTTQ'
                 },
                 body: JSON.stringify(newCoffee), // Send the coffee data in the request body
             });
@@ -68,26 +113,41 @@ export default function AddCoffee() {
             console.log('Response status:', response.status);
             console.log('Response ok:', response.ok);
 
-            const responseBody = await response.json();
-            console.log('Response body:', responseBody); // Log the actual response from the API            
+            if (response.ok) {
+                // If the response is OK, read the response body as text
+                const responseBody = await response.text();
+                console.log('Raw response:', responseBody); // Log the raw response body
 
-            // Check if the request was successful
-            if (response.ok && responseBody.id) {
-                Alert.alert('Success', 'New coffee added successfully!', [
-                    { text: 'OK', onPress: () => router.back() }]);
-                router.replace({
-                    pathname: '/',
-                    params: { id: responseBody.id.toString(), type: newCoffee.type }, // Pass the newly added coffee
-                });
+                try {
+                    const jsonResponse = JSON.parse(responseBody);
+                    console.log('Parsed response:', jsonResponse); // Log the parsed JSON response
+
+                    if (jsonResponse.id) {
+                        Alert.alert('Success', 'New coffee added successfully!', [
+                            { text: 'OK', onPress: () => router.back() }]);
+                        router.replace({
+                            pathname: '/',
+                            params: { id: jsonResponse.id.toString() }, // Pass the newly added coffee
+                        });
+                    } else {
+                        Alert.alert('Error', 'Failed to add coffee. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error parsing response:', error);
+                    Alert.alert('Error', 'Failed to parse the response from the server.');
+                }
             } else {
-                Alert.alert('Error', 'Failed to add coffee. Please try again.');
+                // Handle different error codes here, such as the 502 error
+                const errorResponse = await response.text();
+                console.log('Error response:', errorResponse);
+                Alert.alert('Error', `Server error: ${response.statusText} (${response.status})`);
             }
+
         } catch (error) {
             console.error('Error saving coffee:', error);
             Alert.alert('Error', 'Failed to save coffee. Please try again.');
         }
     };
-
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
