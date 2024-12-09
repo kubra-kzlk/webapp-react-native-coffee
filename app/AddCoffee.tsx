@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { Images, Coffee, GlassWater, Save } from 'lucide-react-native';
 
-const IMGUR_CLIENT_ID = 'fd7e1825c87d431';
+const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM1OTUzMzJ9.d1AD-vAxkIunSHSzhLk1FfFoe72lhsIEj1Fj4Kc_XKg';
 export default function AddCoffee() {
     const router = useRouter();
     const [title, setTitle] = useState('');
@@ -13,6 +13,7 @@ export default function AddCoffee() {
     const [ingredients, setIngredients] = useState('');
     const [image, setImage] = useState<string>('');
     const [type, setType] = useState<'hot' | 'iced' | null>(null);
+    const [coffees, setCoffees] = useState<any[]>([]); // State to hold the list of coffees
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -96,9 +97,6 @@ export default function AddCoffee() {
             ? 'https://sampleapis.assimilate.be/coffee/hot'
             : 'https://sampleapis.assimilate.be/coffee/iced';
 
-
-
-
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -123,8 +121,22 @@ export default function AddCoffee() {
                     console.log('Parsed response:', jsonResponse); // Log the parsed JSON response
 
                     if (jsonResponse.id) {
+                        const newCoffeeItem = {
+                            id: jsonResponse.id, // Ensure ID exists
+                            title: jsonResponse.title,
+                            description: jsonResponse.description,
+                            image: jsonResponse.image,
+                            ingredients: jsonResponse.ingredients || [], // Ensure ingredients is an array
+                        };
+
+                        setCoffees((prevCoffees) => [...prevCoffees, newCoffeeItem]);
+
                         Alert.alert('Success', 'New coffee added successfully!', [
-                            { text: 'OK', onPress: () => router.back() }]);
+                            {
+                                text: 'OK', onPress: () => {
+                                    setCoffees((prevCoffees) => [...prevCoffees, jsonResponse]); // Update list                            
+                                }
+                            }]);
                         router.replace({
                             pathname: '/',
                             params: { id: jsonResponse.id.toString() }, // Pass the newly added coffee
@@ -148,6 +160,40 @@ export default function AddCoffee() {
             Alert.alert('Error', 'Failed to save coffee. Please try again.');
         }
     };
+
+    const fetchCoffees = async () => {
+        const apiUrl = type === 'hot'
+            ? 'https://sampleapis.assimilate.be/coffee/hot'
+            : 'https://sampleapis.assimilate.be/coffee/iced';
+
+        try {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Authorization': `Bearer ${BEARER_TOKEN}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Fetched Coffees:', data); // Check if the API returns the data
+                setCoffees(data); // Store the fetched coffees in the state
+            } else {
+                Alert.alert('Error', 'Failed to fetch coffee list.');
+            }
+        } catch (error) {
+            console.error('Error fetching coffee:', error);
+            Alert.alert('Error', 'Failed to fetch coffee list. Please try again.');
+        }
+    };
+
+    // Fetch coffee list when the component mounts
+    useEffect(() => {
+        if (type) {
+            fetchCoffees();  // Fetch coffees based on the selected type (hot or iced)
+        }
+    }, [type]);  // Run this whenever the 'type' state changes
+
+
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
@@ -204,6 +250,20 @@ export default function AddCoffee() {
                 <TouchableOpacity style={styles.button} onPress={saveCoffee}>
                     <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#402024" /></Text>
                 </TouchableOpacity>
+
+                <FlatList
+                    data={coffees}
+
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <View >
+                            <Text>{item.title}</Text>
+                            <Text>{item.description}</Text>
+                            <Image source={{ uri: item.image }} />
+                        </View>
+                    )}
+                />
+
             </ImageBackground>
         </View>
     );
@@ -317,7 +377,6 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         color: "#402024",
-        marginBottom: 220,
     },
     image: {
         width: '100%',
@@ -326,5 +385,17 @@ const styles = StyleSheet.create({
         marginBottom: 35,
         marginHorizontal: 20,
     },
-
+    coffeeItem: {
+        padding: 10,
+        marginBottom: 20,
+        backgroundColor: '#FFF',
+        borderRadius: 8,
+        width: '80%',
+        alignSelf: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 9,
+        elevation: 6,
+    },
 }); 
