@@ -141,7 +141,7 @@ export default function CoffeeDetail() {
                 <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="#402024" />  Ingredients:</Text>
                 <FlatList
                     data={coffee.ingredients}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(index) => index.toString()}
                     renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>}
                 />
                 {/* Button to search for the coffee's Wikipedia page */}

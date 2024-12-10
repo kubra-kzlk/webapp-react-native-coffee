@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';  // Added import
 import {
   View,
   Text,
@@ -21,28 +22,21 @@ export default function HomeScreen() {
   const [recentlyViewed, setRecentlyViewed] = useState<Coffee[]>([]);
   const [isLoading, setIsLoading] = useState(true); //bundling page
 
-  //lijst recent bekeken koffies
-  useEffect(() => {
-    const saveToRecentCoffees = async () => {
-      const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
-      if (storedCoffees) {
-        setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); // Limit to 3 most recent 
-      }
-    };
-    saveToRecentCoffees();
-    // Listen for changes to recently viewed
-    const intervalId = setInterval(() => {
+  useFocusEffect(
+    React.useCallback(() => {
+      const saveToRecentCoffees = async () => {
+        const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
+        if (storedCoffees) {
+          setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); // Limit to 3 most recent
+        }
+      };
       saveToRecentCoffees();
-    }, 1000); // Re-fetch every 1 second to check for changes
-
-    // Cleanup interval on unmount
-    return () => clearInterval(intervalId);
-  }, []);
+    }, [])  // Only refresh when the screen is focused
+  );
 
 
   // Render coffee name in FlatList
   const renderCoffee = ({ item }: { item: Coffee }) => (
-    //<Text style={styles.headerSubtitle}>{item.title}</Text>
     <TouchableOpacity
       onPress={() => router.push(`/CoffeeDetail?id=${item.id}&type=hot`)} // Navigeer naar de detailpagina met id en type
     >
@@ -139,10 +133,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   headerSubtitle: {
-    fontSize: 20,
+    fontSize: 15,
     textAlign: 'center',
     color: "#402024",
     marginTop: 5,
+    backgroundColor: '#FFF',
+    padding: 5,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 9,
+    fontWeight: 'bold',
+    elevation: 6,
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -176,5 +179,6 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     resizeMode: 'contain',
-  }
+  },
+
 });
