@@ -26,7 +26,7 @@ export default function HomeScreen() {
     const saveToRecentCoffees = async () => {
       const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
       if (storedCoffees) {
-        setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); // Limit to 3 most recent      }
+        setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); // Limit to 3 most recent 
       }
     };
     saveToRecentCoffees();
@@ -42,8 +42,14 @@ export default function HomeScreen() {
 
   // Render coffee name in FlatList
   const renderCoffee = ({ item }: { item: Coffee }) => (
-    <Text style={styles.headerSubtitle}>{item.title}</Text>
+    //<Text style={styles.headerSubtitle}>{item.title}</Text>
+    <TouchableOpacity
+      onPress={() => router.push(`/CoffeeDetail?id=${item.id}&type=hot`)} // Navigeer naar de detailpagina met id en type
+    >
+      <Text style={styles.headerSubtitle}>{item.title}</Text>
+    </TouchableOpacity>
   );
+
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 3000); // Simulate loading
     return () => clearTimeout(timer);
