@@ -32,14 +32,16 @@ export default function CoffeeDetail() {
 
     // Fetch the coffee details from the API
     useEffect(() => {
+        console.log("ID:", id, "Type:", type); // Log the parameters
         const fetchCoffeeDetails = async () => {
-            if (!id) {
-                setError('Missing coffee ID.');
+            if (!id || !type) {
+                setError('Missing coffee ID or type.');
                 setLoading(false);
                 return;
             }
 
             try {
+                console.log('Fetching coffee details for:', type, id);
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

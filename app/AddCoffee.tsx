@@ -13,7 +13,6 @@ export default function AddCoffee() {
     const [ingredients, setIngredients] = useState('');
     const [image, setImage] = useState<string>('');
     const [type, setType] = useState<'hot' | 'iced' | null>(null);
-    const [coffees, setCoffees] = useState<any[]>([]); // State to hold the list of coffees
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -107,52 +106,12 @@ export default function AddCoffee() {
                 body: JSON.stringify(newCoffee), // Send the coffee data in the request body
             });
 
-            // Log status and success status of the response
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-
             if (response.ok) {
-                // If the response is OK, read the response body as text
-                const responseBody = await response.text();
-                console.log('Raw response:', responseBody); // Log the raw response body
-
-                try {
-                    const jsonResponse = JSON.parse(responseBody);
-                    console.log('Parsed response:', jsonResponse); // Log the parsed JSON response
-
-                    if (jsonResponse.id) {
-                        const newCoffeeItem = {
-                            id: jsonResponse.id, // Ensure ID exists
-                            title: jsonResponse.title,
-                            description: jsonResponse.description,
-                            image: jsonResponse.image,
-                            ingredients: jsonResponse.ingredients || [], // Ensure ingredients is an array
-                        };
-
-                        setCoffees((prevCoffees) => [...prevCoffees, newCoffeeItem]);
-
-                        Alert.alert('Success', 'New coffee added successfully!', [
-                            {
-                                text: 'OK', onPress: () => {
-                                    setCoffees((prevCoffees) => [...prevCoffees, jsonResponse]); // Update list                            
-                                }
-                            }]);
-                        router.replace({
-                            pathname: '/',
-                            params: { id: jsonResponse.id.toString() }, // Pass the newly added coffee
-                        });
-                    } else {
-                        Alert.alert('Error', 'Failed to add coffee. Please try again.');
-                    }
-                } catch (error) {
-                    console.error('Error parsing response:', error);
-                    Alert.alert('Error', 'Failed to parse the response from the server.');
-                }
+                Alert.alert('Success', 'New coffee added successfully!', [
+                    { text: 'OK', onPress: () => router.replace({ pathname: '/' }) }
+                ]);
             } else {
-                // Handle different error codes here, such as the 502 error
-                const errorResponse = await response.text();
-                console.log('Error response:', errorResponse);
-                Alert.alert('Error', `Server error: ${response.statusText} (${response.status})`);
+                Alert.alert('Error', 'Failed to add coffee. Please try again.');
             }
 
         } catch (error) {
@@ -160,39 +119,6 @@ export default function AddCoffee() {
             Alert.alert('Error', 'Failed to save coffee. Please try again.');
         }
     };
-
-    const fetchCoffees = async () => {
-        const apiUrl = type === 'hot'
-            ? 'https://sampleapis.assimilate.be/coffee/hot'
-            : 'https://sampleapis.assimilate.be/coffee/iced';
-
-        try {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    'Authorization': `Bearer ${BEARER_TOKEN}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Fetched Coffees:', data); // Check if the API returns the data
-                setCoffees(data); // Store the fetched coffees in the state
-            } else {
-                Alert.alert('Error', 'Failed to fetch coffee list.');
-            }
-        } catch (error) {
-            console.error('Error fetching coffee:', error);
-            Alert.alert('Error', 'Failed to fetch coffee list. Please try again.');
-        }
-    };
-
-    // Fetch coffee list when the component mounts
-    useEffect(() => {
-        if (type) {
-            fetchCoffees();  // Fetch coffees based on the selected type (hot or iced)
-        }
-    }, [type]);  // Run this whenever the 'type' state changes
-
 
     return (
         <View style={styles.container}>
@@ -246,24 +172,10 @@ export default function AddCoffee() {
 
                     <Text style={styles.typeTitle}>Pick an Image <Images size={20} color="#402024" /></Text>
                 </TouchableOpacity>
-                {image && <Image source={{ uri: image }} style={styles.image} />}
+                <Image source={{ uri: image }} resizeMode='contain' style={styles.image} />
                 <TouchableOpacity style={styles.button} onPress={saveCoffee}>
                     <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#402024" /></Text>
                 </TouchableOpacity>
-
-                <FlatList
-                    data={coffees}
-
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        <View >
-                            <Text>{item.title}</Text>
-                            <Text>{item.description}</Text>
-                            <Image source={{ uri: item.image }} />
-                        </View>
-                    )}
-                />
-
             </ImageBackground>
         </View>
     );
@@ -379,23 +291,11 @@ const styles = StyleSheet.create({
         color: "#402024",
     },
     image: {
-        width: '100%',
+        width: 200,
         height: 200,
         borderRadius: 10,
         marginBottom: 35,
         marginHorizontal: 20,
     },
-    coffeeItem: {
-        padding: 10,
-        marginBottom: 20,
-        backgroundColor: '#FFF',
-        borderRadius: 8,
-        width: '80%',
-        alignSelf: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 9,
-        elevation: 6,
-    },
+
 }); 

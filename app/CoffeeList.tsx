@@ -17,6 +17,8 @@ interface Coffee {
     id: string;
     title: string;
 }
+// Updated fetchCoffees function with the Authorization header
+const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM1OTUzMzJ9.d1AD-vAxkIunSHSzhLk1FfFoe72lhsIEj1Fj4Kc_XKg';
 
 export default function CoffeeList() {
     const router = useRouter();
@@ -33,8 +35,15 @@ export default function CoffeeList() {
         }
         try {
             setLoading(true);
-            const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`);
+            const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${BEARER_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            });
             console.log('Fetching data for type:', type);
+
             if (!response.ok) {
                 throw new Error('Failed to fetch coffee data');
             }
@@ -57,6 +66,7 @@ export default function CoffeeList() {
         await fetchCoffees();
         setRefreshing(false);
     };
+
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
