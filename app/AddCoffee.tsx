@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Image, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -120,7 +120,8 @@ export default function AddCoffee() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}> {/* Wrap everything inside SafeAreaView */}
+
             <View style={styles.logoContainer}>
                 <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
             </View>
@@ -129,7 +130,7 @@ export default function AddCoffee() {
                 style={styles.backgroundImage}
                 imageStyle={{ opacity: 0.4 }}
             >
-                <Text style={styles.title}>     Add New Coffee</Text>
+                <Text style={styles.headerTitle}> Add New Coffee</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Title"
@@ -169,14 +170,16 @@ export default function AddCoffee() {
 
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
 
-                    <Text style={styles.typeTitle}>Pick an Image <Images size={20} color="#402024" /></Text>
+                    <Text style={styles.buttonText}>Pick an Image <Images size={20} color="white" /></Text>
                 </TouchableOpacity>
                 <Image source={{ uri: image }} resizeMode='contain' style={styles.image} />
+
                 <TouchableOpacity style={styles.button} onPress={saveCoffee}>
-                    <Text style={styles.buttonText}>Save Coffee <Save size={25} color="#402024" /></Text>
+                    <Text style={styles.buttonText}>Save Coffee <Save size={25} color="white" /></Text>
                 </TouchableOpacity>
             </ImageBackground>
-        </View>
+        </SafeAreaView>
+
     );
 }
 
@@ -188,39 +191,36 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         position: 'absolute',
-        top: 1,
+        top: 2,
         left: 1,
         zIndex: 1, // To make sure the logo is on top of other content
     },
     logo: {
-        width: 80,
-        height: 80,
-        marginTop: 11,
-        marginLeft: 24,
+        width: 70,
+        height: 70,
+        marginTop: 19,
+        marginLeft: 10,
         resizeMode: 'contain',
     },
     backgroundImage: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start', // Ensure content starts at the top
         alignItems: 'center',
         width: '100%',
         height: '100%',
         resizeMode: 'cover'
     },
-    title: {
-        marginBottom: 180,
-        fontSize: 46,
+    headerTitle: {
+        marginBottom: 10,
+        marginTop: 20,
+        fontSize: 40,
         fontWeight: 'bold',
         textAlign: 'center',
         color: "#402024",
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 9,
-        elevation: 6,
         backgroundColor: '#FFF',
-        padding: 10,
+        padding: 15,
         borderRadius: 8,
+        width: '100%',
     },
     input: {
         height: 40,
@@ -239,14 +239,16 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 9,
         elevation: 6,
+        marginBottom: 10,
+        marginTop: 20,
 
     },
     typeTitle: {
-        alignSelf: 'center',
-        fontSize: 28,
+        fontSize: 30,
         fontWeight: 'bold',
+        color: "#402024",
         marginBottom: 10,
-        color: "#402024"
+        marginTop: 20,
 
     },
     radioContainer: {
@@ -278,16 +280,18 @@ const styles = StyleSheet.create({
         color: "#402024"
     },
     button: {
+        backgroundColor: '#402024', // Coffee-like color
         paddingVertical: 12,
-        paddingHorizontal: 15,
+        paddingHorizontal: 25,
         borderRadius: 8,
-        alignItems: 'center'
+        marginTop: 20,
+        alignItems: 'center',
 
     },
     buttonText: {
-        fontSize: 30,
+        color: 'white',
+        fontSize: 18,
         fontWeight: 'bold',
-        color: "#402024",
     },
     image: {
         width: 200,

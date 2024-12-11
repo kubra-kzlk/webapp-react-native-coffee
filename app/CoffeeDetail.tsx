@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     FlatList,
+    SafeAreaView,
     ImageBackground,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
@@ -43,11 +44,13 @@ export default function CoffeeDetail() {
             try {
                 console.log('Fetching coffee details for:', type, id);
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
+                console.log('Response:', response);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
                 const coffeeData: Coffee = await response.json();
+                console.log('Fetched coffee data:', coffeeData);
                 setCoffee(coffeeData);
 
                 // Save coffee to recently viewed list in AsyncStorage
@@ -123,7 +126,8 @@ export default function CoffeeDetail() {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}> {/* Wrap everything inside SafeAreaView */}
+
             <View style={styles.logoContainer}>
                 <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
             </View>
@@ -152,7 +156,8 @@ export default function CoffeeDetail() {
                     <Text style={styles.wikiButtonText}>Learn more about {coffee.title}</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
+
     );
 }
 
@@ -177,7 +182,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 15,
-        color: "#402024"
+        color: "#402024",
+
     },
     image: {
         width: '100%',

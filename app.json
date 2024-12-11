@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "coffee_explorer",
-    "slug": "coffee_explorer",
+    "name": "coffee_connect",
+    "slug": "coffee_connect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "../assets/images/icon.png",
-    "scheme": "coffee_explorer",
+    "scheme": "coffee_connect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {

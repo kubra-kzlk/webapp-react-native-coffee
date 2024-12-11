@@ -8,7 +8,9 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "esModuleInterop": true,  // Add this line
+    "allowSyntheticDefaultImports": true // Optional but recommended for React
   },
   "include": [
     "**/*.ts",

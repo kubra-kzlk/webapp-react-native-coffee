@@ -3,6 +3,7 @@ import {
     View,
     Text,
     FlatList,
+    SafeAreaView,
     RefreshControl,
     Image,
     StyleSheet,
@@ -11,7 +12,7 @@ import {
     ImageBackground,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight, ChevronLeft } from 'lucide-react-native';
 
 interface Coffee {
     id: string;
@@ -68,7 +69,15 @@ export default function CoffeeList() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}> {/* Wrap everything inside SafeAreaView */}
+            {/* Back Button in the top-left corner */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => router.back()} // Go back to the previous screen
+            >
+                <ChevronLeft size={30} color="#402024" />  {/* ChevronLeft icon from lucide-react-native */}
+            </TouchableOpacity>
+            
             <View style={styles.logoContainer}>
                 <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
             </View>
@@ -83,6 +92,7 @@ export default function CoffeeList() {
                     <ActivityIndicator size="large" color="#402024" />
                 ) : (
                     <FlatList
+                        contentContainerStyle={styles.flatListContainer} // This will center the list
                         data={coffees}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }: { item: Coffee }) => (
@@ -96,7 +106,9 @@ export default function CoffeeList() {
                                 }
                             >
                                 <Text style={styles.itemText}>{item.title}</Text>
-                                <ChevronRight color="#402024" />
+                                <View >
+                                    <ChevronRight color="#402024" />
+                                </View>
                             </TouchableOpacity>
                         )}
                         refreshControl={
@@ -105,13 +117,16 @@ export default function CoffeeList() {
                     />
                 )}
             </ImageBackground>
-        </View>
+        </SafeAreaView>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'flex-start', // Align elements at the top
+        alignItems: 'center',
     },
     logoContainer: {
         position: 'absolute',
@@ -128,26 +143,30 @@ const styles = StyleSheet.create({
     },
     backgroundImage: {
         flex: 1,
-        resizeMode: 'cover',
-        justifyContent: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 60,
+        justifyContent: 'flex-start', // Ensure content starts at the top
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover'
+    },
+    backButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        zIndex: 1, // To ensure it is on top of other content
+        padding: 10,
     },
     title: {
-        marginBottom: 50,
-        marginTop: -40,
-        fontSize: 46,
+        marginBottom: 10,
+        marginTop: 20,
+        fontSize: 40,
         fontWeight: 'bold',
         textAlign: 'center',
         color: "#402024",
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 9,
-        elevation: 6,
         backgroundColor: '#FFF',
-        padding: 10,
+        padding: 15,
         borderRadius: 8,
+        width: '100%',
     },
     itemContainer: {
         flexDirection: 'row',
@@ -162,8 +181,13 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 3,
+        width: '80%',
 
 
+    },
+    flatListContainer: {
+        alignItems: 'center',  // Center the FlatList horizontally
+        paddingTop: 20,  // Add some padding at the top
     },
     itemText: {
         fontSize: 18,
