@@ -18,7 +18,6 @@ interface Coffee {
     id: string;
     title: string;
 }
-// Updated fetchCoffees function with the Authorization header
 const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM1OTUzMzJ9.d1AD-vAxkIunSHSzhLk1FfFoe72lhsIEj1Fj4Kc_XKg';
 
 export default function CoffeeList() {
@@ -26,9 +25,7 @@ export default function CoffeeList() {
     const { type } = useLocalSearchParams();
     const [coffees, setCoffees] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
 
-    // Fetch coffee data from the API
     const fetchCoffees = async () => {
         if (!type) {
             console.error('Error: Coffee type is missing');
@@ -44,7 +41,6 @@ export default function CoffeeList() {
                 },
             });
             console.log('Fetching data for type:', type);
-
             if (!response.ok) {
                 throw new Error('Failed to fetch coffee data');
             }
@@ -61,38 +57,23 @@ export default function CoffeeList() {
         fetchCoffees();
     }, [type]);
 
-    // Refresh control handler
-    const onRefresh = async () => {
-        setRefreshing(true);
-        await fetchCoffees();
-        setRefreshing(false);
-    };
-
     return (
-        <SafeAreaView style={styles.container}> {/* Wrap everything inside SafeAreaView */}
-            {/* Back Button in the top-left corner */}
+        <SafeAreaView style={styles.container}>
             <TouchableOpacity
                 style={styles.backButton}
-                onPress={() => router.back()} // Go back to the previous screen
-            >
-                <ChevronLeft size={30} color="#402024" />  {/* ChevronLeft icon from lucide-react-native */}
+                onPress={() => router.back()}>
+                <ChevronLeft size={30} color="#402024" />
             </TouchableOpacity>
-            
-            <View style={styles.logoContainer}>
-                <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
-            </View>
+            <View style={styles.logoContainer}><Image source={require('../assets/images/tr_logo.png')} style={styles.logo} /></View>
+
             <ImageBackground
                 source={require('../assets/images/cpus.jpeg')}
                 style={styles.backgroundImage}
-                imageStyle={{ opacity: 0.8 }}
-            >
+                imageStyle={{ opacity: 0.8 }}>
                 <Text style={styles.title}>{type === 'hot' ? 'Hot coffees' : 'Iced coffees'}</Text>
-
-                {loading ? (
-                    <ActivityIndicator size="large" color="#402024" />
-                ) : (
+                {loading ? (<ActivityIndicator size="large" color="#402024" />) : (
                     <FlatList
-                        contentContainerStyle={styles.flatListContainer} // This will center the list
+                        contentContainerStyle={styles.flatListContainer}
                         data={coffees}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }: { item: Coffee }) => (
@@ -102,48 +83,36 @@ export default function CoffeeList() {
                                     router.push({
                                         pathname: '/CoffeeDetail',
                                         params: { id: item.id.toString(), type: type },
-                                    })
-                                }
-                            >
+                                    })}>
                                 <Text style={styles.itemText}>{item.title}</Text>
-                                <View >
-                                    <ChevronRight color="#402024" />
-                                </View>
+                                <View ><ChevronRight color="#402024" /></View>
                             </TouchableOpacity>
-                        )}
-                        refreshControl={
-                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                        }
-                    />
-                )}
+                        )} />)}
             </ImageBackground>
         </SafeAreaView>
-
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-start', // Align elements at the top
+        justifyContent: 'flex-start',
         alignItems: 'center',
     },
     logoContainer: {
         position: 'absolute',
-        top: 1,
-        left: 1,
-        zIndex: 1, // To make sure the logo is on top of other content
+        top: 15,
+        right: 10,
+        zIndex: 1,
     },
     logo: {
-        width: 80,
-        height: 80,
-        marginTop: 10,
-        marginLeft: 10,
+        width: 70,
+        height: 70,
         resizeMode: 'contain',
     },
     backgroundImage: {
         flex: 1,
-        justifyContent: 'flex-start', // Ensure content starts at the top
+        justifyContent: 'flex-start',
         alignItems: 'center',
         width: '100%',
         height: '100%',
@@ -153,8 +122,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         left: 10,
-        zIndex: 1, // To ensure it is on top of other content
-        padding: 10,
+        zIndex: 1,
+        padding: 30,
     },
     title: {
         marginBottom: 10,
@@ -164,7 +133,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: "#402024",
         backgroundColor: '#FFF',
-        padding: 15,
+        padding: 10,
         borderRadius: 8,
         width: '100%',
     },
@@ -181,13 +150,11 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 3,
-        width: '80%',
-
-
+        width: '90%',
     },
     flatListContainer: {
-        alignItems: 'center',  // Center the FlatList horizontally
-        paddingTop: 20,  // Add some padding at the top
+        alignItems: 'center',
+        paddingTop: 20,
     },
     itemText: {
         fontSize: 18,

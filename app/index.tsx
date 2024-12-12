@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';  // Added import
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -12,14 +12,13 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { GlassWater, Plus, Coffee, CirclePlus } from 'lucide-react-native';
+import { GlassWater, Coffee, CirclePlus, Eye } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 interface Coffee {
   id: string;
   title: string;
 }
 
-const ios = Platform.OS === 'ios';
 export default function HomeScreen() {
   const router = useRouter();
   const [recentlyViewed, setRecentlyViewed] = useState<Coffee[]>([]);
@@ -27,14 +26,7 @@ export default function HomeScreen() {
 
   // Clear AsyncStorage and reset state on reload
   useEffect(() => {
-    const resetAppData = async () => {
-      // Clear all AsyncStorage data
-      await AsyncStorage.clear();
-
-      // Optionally, reset state here if needed
-      setRecentlyViewed([]);
-    };
-
+    const resetAppData = async () => { await AsyncStorage.clear(); };
     resetAppData();
   }, []);  // This will run only once when the component mounts
 
@@ -42,23 +34,17 @@ export default function HomeScreen() {
     React.useCallback(() => {
       const saveToRecentCoffees = async () => {
         const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
-        if (storedCoffees) {
-          setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); // Limit to 3 most recent
-        }
+        if (storedCoffees) { setRecentlyViewed(JSON.parse(storedCoffees).slice(0, 3)); }
       };
       saveToRecentCoffees();
-    }, [])  // Only refresh when the screen is focused
+    }, [])
   );
-
 
   // Render coffee name in FlatList
   const renderCoffee = ({ item }: { item: Coffee }) => (
-    <TouchableOpacity
-      onPress={() => router.push(`/CoffeeDetail?id=${item.id}&type=hot`)} // Navigeer naar de detailpagina met id en type
-    >
+    <TouchableOpacity onPress={() => router.push(`/CoffeeDetail?id=${item.id}&type=hot`)}>
       <Text style={styles.headerSubtitle}>{item.title}</Text>
-    </TouchableOpacity>
-  );
+    </TouchableOpacity>);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000); // Simulate loading
@@ -66,67 +52,44 @@ export default function HomeScreen() {
   }, []);
 
   if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} />
-      </View>
-    );
+    return (<View style={styles.container}> <Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} /> </View>);
   }
 
   return (
-    <SafeAreaView style={styles.container}> {/* Wrap everything inside SafeAreaView */}
-
+    <SafeAreaView style={styles.container}>
       <ImageBackground
         source={require('../assets/images/cpus.jpeg')}
-        style={styles.backgroundImage}
-      >
-        <View style={styles.logoContainer}>
-          <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
-        </View>
+        style={styles.backgroundImage}>
+
         <View style={styles.headerContainer}>
-
-          <Text style={styles.headerTitle}>  COFFEE CONNECT</Text>
-
+          <Text style={styles.headerTitle}>COFFEE CONNECT</Text>
+          <View style={styles.logoContainer}> <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} /> </View>
         </View>
         <View style={styles.recentlyViewedContainer}>
-          <Text style={styles.headerSubtitle}>Recently viewed coffees:</Text>
-          {recentlyViewed.length === 0 ? (
-            <Text style={styles.headerSubtitle}>No recently viewed coffees</Text>
-          ) : (
+          <Text style={styles.headerSubtitle}><Eye size={20} color="#402024" />   Recently viewed coffees:</Text>
+          {recentlyViewed.length === 0 ? (<Text style={styles.headerSubtitle}>No recently viewed coffees</Text>) : (
             <FlatList
               data={recentlyViewed}
               keyExtractor={(item) => item.id}
-              renderItem={renderCoffee}
-            />
-          )}
+              renderItem={renderCoffee} />)}
         </View>
-
-        {/* Buttons */}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })}
-          >
-            <Text style={styles.buttonText}>
-              <Coffee size={22} color="#402024" /> Hot coffees
-            </Text>
+            onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })} >
+            <Text style={styles.buttonText}><Coffee size={22} color="#402024" />   Hot coffees</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}
-          >
-            <Text style={styles.buttonText}>
-              <GlassWater size={22} color="#402024" /> Iced coffees
-            </Text>
+            onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}>
+            <Text style={styles.buttonText}> <GlassWater size={22} color="#402024" />   Iced coffees</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/AddCoffee')}
-          >
-            <Text style={styles.buttonText}> Add new coffee</Text>
+            onPress={() => router.push('/AddCoffee')}>
+            <Text style={styles.buttonText}> <CirclePlus size={22} color="#402024" />   Add coffee</Text>
           </TouchableOpacity>
         </View>
-
       </ImageBackground>
     </SafeAreaView>
   );
@@ -135,7 +98,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start', // Align elements at the top
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   headerContainer: {
@@ -184,7 +147,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'column',
-    justifyContent: 'flex-end', // Align the buttons at the bottom
+    justifyContent: 'flex-end',
     position: 'absolute',
     bottom: 40,
     width: 300,
@@ -210,18 +173,17 @@ const styles = StyleSheet.create({
   logo: {
     width: 70,
     height: 70,
-
     resizeMode: 'contain',
   },
   logoContainer: {
     position: 'absolute',
-    top: ios ? 10 : 10,
-    left: 1,
-    zIndex: 1, // To make sure the logo is on top of other content
+    top: 15,
+    right: 1,
+    zIndex: 1,
   },
   applogo: {
-    width: 200,
-    height: 200,
+    width: 400,
+    height: 400,
     resizeMode: 'contain',
   },
 });

@@ -11,7 +11,8 @@ import {
     SafeAreaView,
     ImageBackground,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { ChevronRight, ChevronLeft } from 'lucide-react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ShoppingBasket } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';  // Import AsyncStorage
 import * as WebBrowser from 'expo-web-browser';
@@ -30,8 +31,8 @@ export default function CoffeeDetail() {
     const [coffee, setCoffee] = useState<Coffee | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
-    // Fetch the coffee details from the API
     useEffect(() => {
         console.log("ID:", id, "Type:", type); // Log the parameters
         const fetchCoffeeDetails = async () => {
@@ -40,7 +41,6 @@ export default function CoffeeDetail() {
                 setLoading(false);
                 return;
             }
-
             try {
                 console.log('Fetching coffee details for:', type, id);
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`);
@@ -53,11 +53,10 @@ export default function CoffeeDetail() {
                 console.log('Fetched coffee data:', coffeeData);
                 setCoffee(coffeeData);
 
-                // Save coffee to recently viewed list in AsyncStorage
                 const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
                 let recentlyViewed = storedCoffees ? JSON.parse(storedCoffees) : [];
 
-                // Avoid duplicates: check if the coffee is already in the list
+                //check if the coffee is already in the list
                 const isAlreadyViewed = recentlyViewed.some((item: Coffee) => item.id === coffeeData.id);
                 if (!isAlreadyViewed) {
                     recentlyViewed = [coffeeData, ...recentlyViewed]; // Add to the top
@@ -74,90 +73,54 @@ export default function CoffeeDetail() {
                 setLoading(false);
             }
         };
-
         fetchCoffeeDetails();
     }, [id]);
 
-    // Function to open the Wikipedia page based on the coffee title
     const openCoffeeWikiPage = (coffeeTitle: string) => {
         // Clean the coffee title to match Wikipedia's naming conventions (lowercase, replace spaces)
         const formattedTitle = coffeeTitle.trim().toLowerCase().replace(/\s+/g, '_');  // Wikipedia format
-
-        // Construct the URL for the first attempt (using the coffee title)
         const wikiUrl = `https://en.wikipedia.org/wiki/${formattedTitle}`;
-
-        // Try to open the specific coffee article
         WebBrowser.openBrowserAsync(wikiUrl).catch(() => {
             // If the first attempt fails, try searching for the coffee + 'coffee' (second attempt)
             const fallbackWikiUrl = `https://en.wikipedia.org/wiki/${formattedTitle}_coffee`;
-
             // Open the fallback URL (with 'coffee' appended)
             WebBrowser.openBrowserAsync(fallbackWikiUrl).catch(() => {
-                // Fallback to a general coffee page if both searches fail
-                WebBrowser.openBrowserAsync('https://en.wikipedia.org/wiki/Coffee');
+                WebBrowser.openBrowserAsync('https://en.wikipedia.org/wiki/Coffee'); // Fallback to a general coffee page if both searches fail
             });
         });
     };
-
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#8B4513" />
-                <Text style={styles.loadingText}>Loading coffee details...</Text>
-            </View>
-        );
-    }
-
-    if (error) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-        );
-    }
-
     if (!coffee) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>Coffee details not found.</Text>
-            </View>
-        );
+        return (<View style={styles.errorContainer}><Text style={styles.errorText}>Coffee details not found.</Text></View>);
     }
 
     return (
-        <SafeAreaView style={styles.container}> {/* Wrap everything inside SafeAreaView */}
-
-            <View style={styles.logoContainer}>
-                <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} />
-            </View>
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => router.back()}>
+                <ChevronLeft size={30} color="#402024" />
+            </TouchableOpacity>
             <ImageBackground
                 source={{ uri: coffee.image }} // Use the API's image URL as the background
                 style={styles.backgroundImage}
-                imageStyle={{ opacity: 0.7 }} // Optional, for opacity effect
-            >
-                {/* The background will take up 3/4 of the screen */}
+                imageStyle={{ opacity: 0.7 }} >
+                <View style={styles.logoContainer}><Image source={require('../assets/images/tr_logo.png')} style={styles.logo} /></View>
             </ImageBackground>
             <View style={styles.contentContainer}>
                 <Text style={styles.title}>{coffee.title}</Text>
                 <Text style={styles.description}>{coffee.description}</Text>
-
                 <Text style={styles.ingredientsTitle}><ShoppingBasket size={30} color="#402024" />  Ingredients:</Text>
                 <FlatList
                     data={coffee.ingredients}
                     keyExtractor={(index) => index.toString()}
-                    renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>}
-                />
-                {/* Button to search for the coffee's Wikipedia page */}
+                    renderItem={({ item }) => <Text style={styles.ingredientItem}>- {item}</Text>} />
                 <TouchableOpacity
                     style={styles.wikiButton}
-                    onPress={() => openCoffeeWikiPage(coffee.title)} // Open the Wikipedia page
-                >
+                    onPress={() => openCoffeeWikiPage(coffee.title)}>
                     <Text style={styles.wikiButtonText}>Learn more about {coffee.title}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
-
     );
 }
 
@@ -167,9 +130,15 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 0.60,  // 1/4 of the screen height
-        backgroundColor: 'white', // Optional, for clear background below the image
+        backgroundColor: 'white',
         padding: 20,
-
+    },
+    backButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        zIndex: 1,
+        padding: 10,
     },
     backgroundImage: {
         flex: 0.75,  // 3/4 of the screen height
@@ -183,7 +152,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 15,
         color: "#402024",
-
     },
     image: {
         width: '100%',
@@ -229,13 +197,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     wikiButton: {
-        backgroundColor: '#402024', // Coffee-like color
+        backgroundColor: '#402024',
         paddingVertical: 12,
         paddingHorizontal: 25,
         borderRadius: 8,
         marginTop: 20,
         alignItems: 'center',
-
     },
     wikiButtonText: {
         color: 'white',
@@ -245,12 +212,12 @@ const styles = StyleSheet.create({
     logoContainer: {
         position: 'absolute',
         top: 1,
-        left: 1,
-        zIndex: 1, // To make sure the logo is on top of other content
+        right: 1,
+        zIndex: 1,
     },
     logo: {
-        width: 80,
-        height: 80,
+        width: 70,
+        height: 70,
         resizeMode: 'contain',
     },
 });
