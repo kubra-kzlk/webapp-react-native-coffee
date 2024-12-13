@@ -52,7 +52,7 @@ export default function HomeScreen() {
   }, []);
 
   if (isLoading) {
-    return (<View style={styles.container}> <Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} /> </View>);
+    return (<View style={styles.container}> <Text><Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} /> </Text></View>);
   }
 
   return (
@@ -60,7 +60,6 @@ export default function HomeScreen() {
       <ImageBackground
         source={require('../assets/images/cpus.jpeg')}
         style={styles.backgroundImage}>
-
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>COFFEE CONNECT</Text>
           <View style={styles.logoContainer}> <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} /> </View>

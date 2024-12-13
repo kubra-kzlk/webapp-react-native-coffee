@@ -132,7 +132,10 @@ export default function AddCoffee() {
                     <TouchableOpacity
                         style={styles.radioButton}
                         onPress={() => setType('hot')} >
-                        <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} /><Text style={styles.radioLabel}><Coffee size={20} color="#402024" />  Hot Coffee </Text> </TouchableOpacity>
+                        <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
+                        <Text style={styles.radioLabel}>
+                            <Coffee size={20} color="#402024" />  Hot Coffee </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.radioButton}
                         onPress={() => setType('iced')}>
