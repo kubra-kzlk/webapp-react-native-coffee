@@ -9,7 +9,6 @@ import {
   FlatList,
   SafeAreaView,
   Image,
-  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { GlassWater, Coffee, CirclePlus, Eye } from 'lucide-react-native';
@@ -43,7 +42,7 @@ export default function HomeScreen() {
   // Render coffee name in FlatList
   const renderCoffee = ({ item }: { item: Coffee }) => (
     <TouchableOpacity onPress={() => router.push(`/CoffeeDetail?id=${item.id}&type=hot`)}>
-      <Text style={styles.headerSubtitle}>{item.title}</Text>
+      <View><Text style={styles.headerSubtitle}>{item.title}</Text></View >
     </TouchableOpacity>);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ export default function HomeScreen() {
   }, []);
 
   if (isLoading) {
-    return (<View style={styles.container}> <Text><Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} /> </Text></View>);
+    return (<View style={styles.container}> <Image source={require('../assets/images/tr_logo.png')} style={styles.applogo} /> </View>);
   }
 
   return (
@@ -65,8 +64,14 @@ export default function HomeScreen() {
           <View style={styles.logoContainer}> <Image source={require('../assets/images/tr_logo.png')} style={styles.logo} /> </View>
         </View>
         <View style={styles.recentlyViewedContainer}>
-          <Text style={styles.headerSubtitle}><Eye size={20} color="#402024" />   Recently viewed coffees:</Text>
-          {recentlyViewed.length === 0 ? (<Text style={styles.headerSubtitle}>No recently viewed coffees</Text>) : (
+          <View>
+            <Text style={styles.headerSubtitle}>
+              <Eye size={20} color="#402024" />
+              {' '}  Recently viewed coffees:
+            </Text>
+          </View>
+          {recentlyViewed.length === 0 ? (
+            <View><Text style={styles.headerSubtitle}>No recently viewed coffees</Text></View>) : (
             <FlatList
               data={recentlyViewed}
               keyExtractor={(item) => item.id}
@@ -76,17 +81,25 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'hot' } })} >
-            <Text style={styles.buttonText}><Coffee size={22} color="#402024" />   Hot coffees</Text>
+            <View >
+              <Text style={styles.buttonText}>
+                <Coffee size={22} color="#402024" />   Hot coffees</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push({ pathname: '/CoffeeList', params: { type: 'iced' } })}>
-            <Text style={styles.buttonText}> <GlassWater size={22} color="#402024" />   Iced coffees</Text>
+            <View>
+              <Text style={styles.buttonText}>
+                <GlassWater size={22} color="#402024" />   Iced coffees</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/AddCoffee')}>
-            <Text style={styles.buttonText}> <CirclePlus size={22} color="#402024" />   Add coffee</Text>
+            <View>
+              <Text style={styles.buttonText}> <CirclePlus size={22} color="#402024" />   Add coffee</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </ImageBackground>

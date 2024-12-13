@@ -45,13 +45,9 @@ export default function CoffeeDetail() {
                 console.log('Fetching coffee details for:', type, id);
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`, {
                     method: 'GET',
-
                     headers: {
-
                         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5ODFAYXAuYmUiLCJpYXQiOjE3MzM3NDEwODR9.RU_UFL6rHgQqMDy5UeqLct7CsZwjfv5Mz-qCqUluTTQ',
-
                     },
-
                 });
                 console.log('Response:', response);
                 if (!response.ok) {

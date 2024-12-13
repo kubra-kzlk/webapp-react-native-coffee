@@ -90,7 +90,7 @@ export default function AddCoffee() {
             });
             if (response.ok) {
                 Alert.alert('Success', 'New coffee added successfully!', [
-                    { text: 'OK', onPress: () => router.replace({ pathname: '/' }) }
+                    { text: 'OK', onPress: () => router.push('/') }
                 ]);
             } else { Alert.alert('Error', 'Failed to add coffee. Please try again.'); }
         } catch (error) {
@@ -133,17 +133,33 @@ export default function AddCoffee() {
                         style={styles.radioButton}
                         onPress={() => setType('hot')} >
                         <View style={[styles.radioCircle, type === 'hot' && styles.radioCircleSelected]} />
-                        <Text style={styles.radioLabel}>
+                        <View><Text style={styles.radioLabel}>
                             <Coffee size={20} color="#402024" />  Hot Coffee </Text>
+                        </View>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.radioButton}
                         onPress={() => setType('iced')}>
-                        <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} /><Text style={styles.radioLabel}><GlassWater size={20} color="#402024" /> Iced Coffee</Text> </TouchableOpacity>
+                        <View style={[styles.radioCircle, type === 'iced' && styles.radioCircleSelected]} />
+                        <View>
+                            <Text style={styles.radioLabel}>
+                                <GlassWater size={20} color="#402024" /> Iced Coffee</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.button} onPress={pickImage}><Text style={styles.buttonText}>Pick an image <Images size={15} color="white" /></Text> </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={pickImage}>
+                    <View>
+                        <Text style={styles.buttonText}>Pick an image <Images size={15} color="white" /></Text>
+                    </View>
+                </TouchableOpacity>
+
                 <Image source={{ uri: image }} resizeMode='contain' style={styles.image} />
-                <TouchableOpacity style={styles.button} onPress={saveCoffee}> <Text style={styles.buttonText}>Save Coffee <Save size={20} color="white" /></Text></TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={saveCoffee}>
+                    <View>
+                        <Text style={styles.buttonText}>Save Coffee <Save size={20} color="white" /></Text>
+                    </View>
+                </TouchableOpacity>
+
             </ImageBackground>
         </SafeAreaView>
     );
