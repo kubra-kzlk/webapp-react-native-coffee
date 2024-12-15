@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import * as Notifications from 'expo-notifications';
-import { Image } from 'react-native';
 
 export default function Layout() {
 

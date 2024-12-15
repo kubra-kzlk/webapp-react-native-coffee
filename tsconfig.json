@@ -9,8 +9,8 @@
         "./*"
       ]
     },
-    "esModuleInterop": true,  // Add this line
-    "allowSyntheticDefaultImports": true // Optional but recommended for React
+    "esModuleInterop": true,  
+    "allowSyntheticDefaultImports": true 
   },
   "include": [
     "**/*.ts",
