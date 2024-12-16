@@ -14,7 +14,7 @@ export default function AddCoffee() {
     const [image, setImage] = useState<string>('');
     const [type, setType] = useState<'hot' | 'iced' | null>(null);
 
-    const pickImage = async () => {
+    const pickImage = async () => {//Opens the media library to allow the user to select an image
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
             Alert.alert('Permission Required', 'You need to grant permission to access the media library.');
@@ -79,7 +79,7 @@ export default function AddCoffee() {
         const apiUrl = type === 'hot'    // Determine the correct API endpoint based on the coffee type
             ? 'https://sampleapis.assimilate.be/coffee/hot'
             : 'https://sampleapis.assimilate.be/coffee/iced';
-        try {
+        try { // POST request to the API to add the new coffee
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {

@@ -22,8 +22,8 @@ const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InMxMzI5O
 
 export default function CoffeeList() {
     const router = useRouter();
-    const { type } = useLocalSearchParams();
-    const [coffees, setCoffees] = useState([]);
+    const { type } = useLocalSearchParams(); //extracts the query parameter: hot / iced
+    const [coffees, setCoffees] = useState([]);//Holds the list of coffee objects fetched from the API. Initially set as an empty array
     const [loading, setLoading] = useState(true);
 
     const fetchCoffees = async () => {
@@ -31,7 +31,7 @@ export default function CoffeeList() {
             console.error('Error: Coffee type is missing');
             return;
         }
-        try {
+        try { //GET request to API endpoint to fetch coffee data, incl coffee type
             setLoading(true);
             const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}`, {
                 method: 'GET',

@@ -28,7 +28,7 @@ interface Coffee {
 
 export default function CoffeeDetail() {
     const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
-    const [coffee, setCoffee] = useState<Coffee | null>(null);
+    const [coffee, setCoffee] = useState<Coffee | null>(null); //Stores the fetched coffee details
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -41,7 +41,7 @@ export default function CoffeeDetail() {
                 setLoading(false);
                 return;
             }
-            try {
+            try { //API GET call: Fetch coffee details from API
                 console.log('Fetching coffee details for:', type, id);
                 const response = await fetch(`https://sampleapis.assimilate.be/coffee/${type}/${id}`, {
                     method: 'GET',
@@ -53,7 +53,7 @@ export default function CoffeeDetail() {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
+                //parses the JSON data and updates the coffee state.
                 const coffeeData: Coffee = await response.json();
                 console.log('Fetched coffee data:', coffeeData);
                 setCoffee(coffeeData);

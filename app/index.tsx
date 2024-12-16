@@ -29,7 +29,7 @@ export default function HomeScreen() {
     resetAppData();
   }, []);  // This will run only once when the component mounts
 
-  useFocusEffect(
+  useFocusEffect(//fetch recently viewed data when screen is focused 
     React.useCallback(() => {
       const saveToRecentCoffees = async () => {
         const storedCoffees = await AsyncStorage.getItem('recentlyViewed');
