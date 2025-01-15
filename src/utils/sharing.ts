@@ -1,7 +1,7 @@
 //delen van de coffee: genereert een tekst bestand met gedeelde coffee
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
-import type { Coffee } from "../types/Coffee";
+import type { Coffee } from "../types/coffee";
 
 const shareCoffee = async (coffee: Coffee[]) => {
     const fileUri = FileSystem.cacheDirectory + "coffee.txt";
